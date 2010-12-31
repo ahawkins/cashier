@@ -46,11 +46,16 @@ module Cashier
 
   def expire(*tags)
     tags.each do |tag|
-      redis.smembers(tags).each do |cache_key|
-        Rails.cache.delete(cache_key)
+      # check to see if the tag exsists
+      # some redis versions return nil or []
+      members = redis.smembers(tags)
+      if members.is_a?(Array)
+        members.each do |cache_key|
+          Rails.cache.delete(cache_key)
+        end
+        redis.del(tag)
+        redis.srem(STORAGE_KEY, tag)
       end
-      redis.del(tag)
-      redis.srem(STORAGE_KEY, tag)
     end
   end
 
