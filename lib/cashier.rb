@@ -50,10 +50,17 @@ module Cashier
         Rails.cache.delete(cache_key)
       end
       redis.del(tag)
+      redis.srem(STORAGE_KEY, tag)
     end
   end
 
   def tags
     redis.smembers STORAGE_KEY
   end
+
+  def wipe
+    expire(*tags)
+  end
 end  
+
+require 'cashier/controller_helper'

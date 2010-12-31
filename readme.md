@@ -66,7 +66,9 @@ Then write a simple initializer to configure Cahiser. Drop this file in in `conf
     resque_config = YAML.load_file(rails_root + '/config/cashier.yml')
     Cashier.redis = resque_config[rails_env]
 
-Now in your `application_controller.rb` file just include this line:
+Now in your `application_controller.rb` file just include these lines:
+
+    require 'cashier'
 
     class ApplicationController < ActionController::Base
       include Cashier::ControllerHelper
