@@ -10,6 +10,9 @@ Manage your cache keys with tags, forget about keys!
     # in another view
     cache @some_releated_record, :tag => 'some-component'
 
+    # can have multiple tags
+    cache @something, :tag => ['dashboard', 'settings'] # can expire from either tag
+
     # in your sweeper
     Cashier.expire 'some-component' # don't worry about keys! Much easier to sweep with confidence
 
@@ -19,8 +22,22 @@ Manage your cache keys with tags, forget about keys!
       c.params
     }
 
+
+    # need to access the controller?
+    caches_action :tag => proc {|c|
+      # c is the controller
+      "users/#{c.current_user.id}/dashboard"      
+    }
+
     # in your sweeper, in your observers, in your resque jobs...wherever
     Cashier.expire 'complicated-action'
+    Cashier.expire 'tag1', 'tag2', 'tag3', 'tag4'
+
+    # what's cached
+    Cashier.tags
+
+    # sweep all stored keys
+    Cashier.wipe
 
 ## How it Came About
 
@@ -48,7 +65,7 @@ down two one line of code. It's also made managing the cache throught my applica
 
 ## How it Works
 
-Cashier hooks into Rails' `expire_fragment` method using `alias_method_chain` to run some code that captures they key
+Cashier hooks into Rails' `expire_fragment` method using `alias_method_chain` to run some code that captures the key
 and tag then stores that as a set in redis. Then uses the set members to loop over keys to deleting using `Rails.cache.delete`
 
 ## Configuration
@@ -60,15 +77,10 @@ Cashier needs Redis to function correctly. Create a yaml file. You may call it `
 
 Then write a simple initializer to configure Cahiser. Drop this file in in `config/initializers/cashier.rb`
 
-    rails_root = ENV['RAILS_ROOT'] || File.dirname(__FILE__) + '/../..'
-    rails_env = ENV['RAILS_ENV'] || 'development'
+    resque_config = YAML.load_file(Raisl.root.join 'config', 'cashiser.yml')
+    Cashier.redis = resque_config[Rails.env]
 
-    resque_config = YAML.load_file(rails_root + '/config/cashier.yml')
-    Cashier.redis = resque_config[rails_env]
-
-Now in your `application_controller.rb` file just include these lines:
-
-    require 'cashier'
+Now in your `application_controller.rb` file just include the module
 
     class ApplicationController < ActionController::Base
       include Cashier::ControllerHelper
