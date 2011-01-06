@@ -16,7 +16,7 @@ module Cashier
     def self.included(klass)
       klass.class_eval do
         def write_fragment_with_tagged_key(key, content, options = nil)
-          if options && options[:tag] 
+          if options && options[:tag] && Cashier.perform_caching? 
             passed_tags = case options[:tag].class.to_s
                    when 'Proc', 'Lambda'
                      options[:tag].call(self)

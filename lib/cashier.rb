@@ -6,6 +6,10 @@ module Cashier
   # used to track all the tags Cashier is storing
   STORAGE_KEY = 'cashier-tags'
 
+  def perform_caching?
+    ::ApplicationController.perform_caching
+  end
+
   # shamefully taken straight from Resque.
   # Thanks Defunkt :D
 
@@ -45,6 +49,8 @@ module Cashier
   end
 
   def expire(*tags)
+    return unless perform_caching?
+
     tags.each do |tag|
       # check to see if the tag exsists
       # some redis versions return nil or []
