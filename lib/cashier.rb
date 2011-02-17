@@ -69,9 +69,25 @@ module Cashier
     redis.smembers STORAGE_KEY
   end
 
-  def wipe
+  def clear
     expire(*tags)
+    redis.del(STORAGE_KEY)
+  end
+
+  def wipe
+    clear
+  end
+
+  def keys
+    tags.inject([]) do |arry, tag|
+      arry += Cashier.redis.smembers(tag)
+    end.compact
+  end
+
+  def keys_for(tag)
+    Cashier.redis.smembers(tag)
   end
 end  
 
 require 'cashier/controller_helper'
+require 'cashier/matchers'
