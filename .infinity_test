@@ -1,0 +1,19 @@
+infinity_test do
+  notifications :growl
+
+  use  :test_framework => :rspec
+
+  before_run do
+    clear :terminal
+  end
+
+  heuristics do
+    add('lib/(.+)\.rb') do |file|
+      run :all => :tests
+    end
+    
+    add('rails_app') do |file|
+      run :all => :tests
+    end
+  end
+end

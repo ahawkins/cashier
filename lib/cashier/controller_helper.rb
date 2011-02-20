@@ -17,17 +17,13 @@ module Cashier
       klass.class_eval do
         def write_fragment_with_tagged_key(key, content, options = nil)
           if options && options[:tag] && Cashier.perform_caching? 
-            passed_tags = case options[:tag].class.to_s
+            tags = case options[:tag].class.to_s
                    when 'Proc', 'Lambda'
                      options[:tag].call(self)
                    else 
                      options[:tag]
                    end
-            tags = passed_tags.is_a?(Array) ? passed_tags : [passed_tags]
-            tags.each do |tag|
-              Cashier.redis.sadd tag, fragment_cache_key(key)
-              Cashier.redis.sadd Cashier::STORAGE_KEY, tag
-            end
+            Cashier.store_fragment fragment_cache_key(key), *tags
           end
           write_fragment_without_tagged_key(key, content, options)
         end
