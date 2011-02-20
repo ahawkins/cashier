@@ -6,14 +6,14 @@ Manage your cache keys with tags, forget about keys!
 
     # in your view
     cache @some_record, :tag => 'some-component'
-    
+
     # in another view
     cache @some_releated_record, :tag => 'some-component'
 
     # can have multiple tags
     cache @something, :tag => ['dashboard', 'settings'] # can expire from either tag
 
-    # in your sweeper
+    # in an observer
     Cashier.expire 'some-component' # don't worry about keys! Much easier to sweep with confidence
 
     # in your controller
@@ -21,7 +21,6 @@ Manage your cache keys with tags, forget about keys!
       # huge complicated mess of parameters
       c.params
     }
-
 
     # need to access the controller?
     caches_action :tag => proc {|c|
@@ -37,7 +36,7 @@ Manage your cache keys with tags, forget about keys!
     Cashier.tags
 
     # sweep all stored keys
-    Cashier.wipe
+    Cashier.clear
 
 ## How it Came About
 
@@ -49,44 +48,60 @@ I needed a better solution. I wanted to expire things logically as a viewed them
 a record was added, I wanted to say "expire that page". Problem was that page contained ~1000 different keys.
 So I needed something to store the keys for me and associate them with tags. That's exactly what cashier does.
 Cache associate individual cache keys with a tag, then expire them all at once. This took my 7 layer loop
-down two one line of code. It's also made managing the cache throught my application much easier.
+down to one line of code. It's also made managing the cache throught my application much easier.
 
 ## Why Tag Based Caching is Useful
 
-  1. You don't worry about keys. How many times have you created a complicated key for a fragment or action
-  then messed up when you tried to expire the cache
-  2. Associate your cached content into groups of related content. If you have records that are closely associated
-  or displayed together, then you can tag them and expire them at once.
-  3. **Expire cached content from anywhere.** If you've done any serious development, you know that Rails caching
-  does not work (easily) outside the scope of an HTTP request. If you have background jobs that manipulate data
-  or potentially invalidate cached data, you know how much of a pain it is to say `expire_fragment` in some random code.
-  4. Don't do anything differently! All you have to do is pass `:tag => 'something'` into `cache` (in the view) or `caches_action` 
-  in the controller.
+1. You don't worry about keys. How many times have you created a complicated key for a fragment or action
+then messed up when you tried to expire the cache
+2. Associate your cached content into groups of related content. If you have records that are closely associated
+or displayed together, then you can tag them and expire them at once.
+3. **Expire cached content from anywhere.** If you've done any serious development, you know that Rails caching
+does not work (easily) outside the scope of an HTTP request. If you have background jobs that manipulate data
+or potentially invalidate cached data, you know how much of a pain it is to say `expire_fragment` in some random code.
+4. Don't do anything differently! All you have to do is pass `:tag => 'something'` into `cache` (in the view) or `caches_action` 
+in the controller.
 
 ## How it Works
 
 Cashier hooks into Rails' `expire_fragment` method using `alias_method_chain` to run some code that captures the key
-and tag then stores that as a set in redis. Then uses the set members to loop over keys to deleting using `Rails.cache.delete`
+and tag then stores that in the rails cache. **No external processes are
+needed. All tag/fragment information is stored in the Rails.cache.**
 
 ## Configuration
 
-Cashier needs Redis to function correctly. Create a yaml file. You may call it `config/cashier.yml`
+**if you're using Rails 3, there is no configuration.** If you're using
+Rails 2, include `Cashier::ControllerHelper` into ApplicationController
+like so:
 
-    development: localhost:6379
-    test: localhost:6379/test
+    require 'cashier'
 
-Then write a simple initializer to configure Cahiser. Drop this file in in `config/initializers/cashier.rb`
-
-    resque_config = YAML.load_file(Raisl.root.join 'config', 'cashiser.yml')
-    Cashier.redis = resque_config[Rails.env]
-
-Now in your `application_controller.rb` file just include the module
-
-    class ApplicationController < ActionController::Base
+    class ApplicationController
       include Cashier::ControllerHelper
     end
 
-Now you're good to go!
+## Testing
+
+I've also included some Rspec Matchers and a cucumber helper for testing
+caching. The rspec matchers can be used like this:
+
+  describe "get index" do
+    it "should cache the action" do
+      get :index
+      'some-tag'.should be_cached
+    end
+  end
+
+Testing w/cucumber is more involved. **Make sure you set perform_caching = true in test.rb**
+Then require `cashier/cucumber` to use the matchers in your steps. Here
+is an example of a possible step
+
+    Then /the dashboard should be cached/ do
+      "dashboard".should be_cached
+    end
+
+Including `cashier/cucumber` will also wipe the cache before every
+scenario.
 
 ## Contributing to Cashier
  
