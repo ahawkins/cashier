@@ -40,7 +40,10 @@ RSpec.configure do |config|
     `echo '#{redis_options}' | redis-server -`
   end
 
+  $redis = Redis.new(:host => '127.0.0.1', :port => 9736)
+
   config.before(:each) do
+    $redis.flushdb
     Rails.cache.clear
   end
 end
