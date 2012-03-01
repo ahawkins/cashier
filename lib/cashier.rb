@@ -1,5 +1,3 @@
-# Cashier
-
 module Cashier
   extend self
 
@@ -68,11 +66,5 @@ module Cashier
   end
 end
 
-require 'cashier/controller_helper'
-require 'cashier/matchers'
-
-if defined?(::Rails)
-  if Rails::VERSION::MAJOR == 3
-    require 'cashier/railtie'
-  end
-end
+require 'rails'
+require 'cashier/railtie'
