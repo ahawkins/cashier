@@ -29,4 +29,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'guard'
   s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'growl'
+  s.add_development_dependency 'hiredis', '~> 0.3.1'
+  s.add_development_dependency 'redis', '~> 2.2.0'
 end
