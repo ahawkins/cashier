@@ -68,18 +68,6 @@ Cashier hooks into Rails' `expire_fragment` method using `alias_method_chain` to
 and tag then stores that in the rails cache. **No external processes are
 needed. All tag/fragment information is stored in the Rails.cache.**
 
-## Configuration
-
-**if you're using Rails 3, there is no configuration.** If you're using
-Rails 2, include `Cashier::ControllerHelper` into ApplicationController
-like so:
-
-    require 'cashier'
-
-    class ApplicationController
-      include Cashier::ControllerHelper
-    end
-
 ## Testing
 
 I've also included some Rspec Matchers and a cucumber helper for testing
