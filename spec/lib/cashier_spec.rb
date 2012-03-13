@@ -75,6 +75,8 @@ describe "Cashier" do
         subject.store_fragment('key2', 'settings')
         subject.store_fragment('key3', 'email')
 
+        puts "Tags: #{subject.tags}"
+
         subject.tags.should eql(%w(dashboard settings email))
       end
     end

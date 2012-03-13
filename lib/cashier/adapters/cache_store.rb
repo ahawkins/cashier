@@ -6,13 +6,13 @@ module Cashier
         Rails.cache.write(tag, fragments + [fragment])
       end
 
-      def self.store_tags(*tags)
+      def self.store_tags(tags)
         cashier_tags = Rails.cache.fetch(Cashier::CACHE_KEY) || []
         cashier_tags = (cashier_tags + tags).uniq
         Rails.cache.write(Cashier::CACHE_KEY, cashier_tags)
       end
 
-      def self.remove_tags(*tags)
+      def self.remove_tags(tags)
         cashier_tags = Rails.cache.fetch(Cashier::CACHE_KEY) || []
         cashier_tags = (cashier_tags - tags).uniq
         Rails.cache.write(Cashier::CACHE_KEY, cashier_tags)

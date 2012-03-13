@@ -10,7 +10,7 @@ describe Cashier::Adapters::CacheStore do
   end
 
   it "should store the tag in the tags array" do
-    subject.store_tags("dashboard")
+    subject.store_tags(["dashboard"])
     cache.fetch(Cashier::CACHE_KEY).should eql(['dashboard'])
   end
 
@@ -31,13 +31,18 @@ describe Cashier::Adapters::CacheStore do
   end
 
   it "should return the list of tags" do
-    (1..5).each {|i| subject.store_tags("tag-#{i}")}
+    (1..5).each {|i| subject.store_tags(["tag-#{i}"])}
     subject.tags.length.should == 5
   end
 
+  it "should return the tags correctly" do
+    subject.store_tags(["tag-1", "tag-2", "tag-3"])
+    subject.tags.include?("tag-1").should be_true
+  end
+
   it "should remove tags from the tags list" do
-    (1..5).each {|i| subject.store_tags("tag-#{i}")}
-    subject.remove_tags("tag-1", "tag-2", "tag-3", "tag-4", "tag-5")
+    (1..5).each {|i| subject.store_tags(["tag-#{i}"])}
+    subject.remove_tags(["tag-1", "tag-2", "tag-3", "tag-4", "tag-5"])
     subject.tags.length.should == 0
   end
 
