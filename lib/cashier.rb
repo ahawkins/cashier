@@ -44,7 +44,7 @@ module Cashier
 
       adapter.delete_tag(tag)
     end
-
+    
     # now remove them from the list
     # of stored tags
     adapter.remove_tags(tags)

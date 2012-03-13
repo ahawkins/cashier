@@ -50,15 +50,17 @@ describe "Cashier" do
       it "should remove delete the fragment key" do
         adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(["fragment-key"])
         adapter.should_receive(:delete_tag).with('dashboard')
+        adapter.should_receive(:remove_tags).with(['dashboard'])
 
         subject.expire('dashboard')
-        
-        Rails.cache.fetch('fragment-key').should be_nil
       end
 
       it "should remove the tag" do 
+        adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return([])
+        adapter.should_receive(:delete_tag).with('dashboard')
+        adapter.should_receive(:remove_tags).with(['dashboard'])
+
         subject.expire('dashboard')
-        Rails.cache.fetch('dashboard').should be_nil
       end
 
       it "should remove the tag from the list of tracked tags"  do
