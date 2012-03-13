@@ -18,19 +18,27 @@ describe "Cashier" do
   end
 
   context "Rails.cache as the adapter" do
+    before(:each) do
+      Cashier.adapter = :cache_store
+    end
     subject { Cashier }
-    let(:cache) { Rails.cache }
+    let(:adapter) { Cashier.adapter }
 
     describe "#store_fragment" do
       it "should write the tag to the cache" do
-        subject.store_fragment('fragment-key', 'dashboard')
+        adapter.should_receive(:store_fragment_in_tag).with('dashboard', 'fragment-key')
+        adapter.should_receive(:store_tags).with(["dashboard"])
 
-        cache.fetch('dashboard').should eql(['fragment-key'])
+        subject.store_fragment('fragment-key', 'dashboard')
       end
 
       it "should store the tag for book keeping" do
+        adapter.should_receive(:store_fragment_in_tag).with('dashboard', 'fragment-key')
+        adapter.should_receive(:store_fragment_in_tag).with('settings', 'fragment-key')
+
+        adapter.should_receive(:store_tags).with(["dashboard", "settings"])
+
         subject.store_fragment('fragment-key', 'dashboard', 'settings')
-        cache.fetch(Cashier::CACHE_KEY).should eql(%w(dashboard settings))
       end
     end
 
@@ -40,7 +48,11 @@ describe "Cashier" do
       end
 
       it "should remove delete the fragment key" do
+        adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(["fragment-key"])
+        adapter.should_receive(:delete_tag).with('dashboard')
+
         subject.expire('dashboard')
+        
         Rails.cache.fetch('fragment-key').should be_nil
       end
 

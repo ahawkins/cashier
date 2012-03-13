@@ -24,14 +24,11 @@ module Cashier
 
     tags.each do |tag|
       # store the fragment
-      fragments = Rails.cache.fetch(tag) || []
-      Rails.cache.write(tag, fragments + [fragment])
+      adapter.store_fragment_in_tag(tag, fragment)
     end
 
-    # now store the tag for book keeping
-    cashier_tags = Rails.cache.fetch(CACHE_KEY) || []
-    cashier_tags = (cashier_tags + tags).uniq
-    Rails.cache.write(CACHE_KEY, cashier_tags)
+     # now store the tag for book keeping
+    adapter.store_tags(tags)
   end
 
   def expire(*tags)
@@ -39,23 +36,22 @@ module Cashier
 
     # delete them from the cache
     tags.each do |tag|
-      if fragment_keys = Rails.cache.fetch(tag)
-        fragment_keys.each do |fragment_key|
-          Rails.cache.delete(fragment_key)
-        end
+      fragment_keys = adapter.get_fragments_for_tag(tag)
+      
+      fragment_keys.each do |fragment_key|
+        Rails.cache.delete(fragment_key)
       end
-      Rails.cache.delete(tag)
+
+      adapter.delete_tag(tag)
     end
 
     # now remove them from the list
     # of stored tags
-    cashier_tags = Rails.cache.fetch(CACHE_KEY) || []
-    cashier_tags = (cashier_tags - tags).uniq
-    Rails.cache.write(CACHE_KEY, cashier_tags)
+    adapter.remove_tags(tags)
   end
 
   def tags
-    Rails.cache.fetch(CACHE_KEY) || []
+    adapter.tags
   end
 
   def clear

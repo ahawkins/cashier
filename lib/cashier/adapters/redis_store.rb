@@ -8,6 +8,14 @@ module Cashier
       def self.redis=(redis_instance)
         @@redis = redis_instance
       end
+
+      
+
+      
+
+
+
+
     end
   end
 end
