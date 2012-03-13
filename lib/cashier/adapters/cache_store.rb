@@ -29,6 +29,11 @@ module Cashier
       def self.delete_tag(tag)
         Rails.cache.delete(tag)  
       end
+
+      def self.clear
+        remove_tags(tags)
+        Rails.cache.delete(Cashier::CACHE_KEY)
+      end
       
     end
   end

@@ -75,8 +75,6 @@ describe "Cashier" do
         subject.store_fragment('key2', 'settings')
         subject.store_fragment('key3', 'email')
 
-        puts "Tags: #{subject.tags}"
-
         subject.tags.should eql(%w(dashboard settings email))
       end
     end
@@ -89,7 +87,7 @@ describe "Cashier" do
       end
 
       it "should expire all tags" do
-        subject.should_receive(:expire).with('dashboard','settings','email')
+        adapter.should_receive(:clear)
         subject.clear
       end
 

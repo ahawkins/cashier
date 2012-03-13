@@ -46,5 +46,21 @@ describe Cashier::Adapters::CacheStore do
     subject.tags.length.should == 0
   end
 
+  context "clear" do
+    before(:each) do
+      subject.store_tags(['dashboard'])
+      subject.store_tags(['settings'])
+      subject.store_tags(['email'])
+    end
+
+    it "should clear the cache and remove all of the tags" do
+      subject.should_receive(:remove_tags).with(['dashboard','settings','email'])
+      subject.clear
+      Rails.cache.read(Cashier::CACHE_KEY).should be_nil
+    end
+  end
+
+  
+
 
 end

@@ -44,7 +44,7 @@ module Cashier
 
       adapter.delete_tag(tag)
     end
-    
+
     # now remove them from the list
     # of stored tags
     adapter.remove_tags(tags)
@@ -55,8 +55,7 @@ module Cashier
   end
 
   def clear
-    expire(*tags)
-    Rails.cache.delete(CACHE_KEY)
+    adapter.clear
   end
 
   def wipe
