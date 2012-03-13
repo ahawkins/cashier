@@ -3,6 +3,18 @@ module Cashier
 
   CACHE_KEY = 'cashier-tags'
 
+  def adapter
+    if @@adapter == :cache_store
+      Cashier::Adapters::CacheStore
+    else
+      Cashier::Adapters::RedisStore
+    end
+  end
+  
+  def adapter=(cache_adapter)
+    @@adapter = cache_adapter
+  end
+
   def perform_caching?
     ::ApplicationController.perform_caching
   end
@@ -68,3 +80,5 @@ end
 
 require 'rails'
 require 'cashier/railtie'
+require 'cashier/adapters/cache_store'
+require 'cashier/adapters/redis_store'

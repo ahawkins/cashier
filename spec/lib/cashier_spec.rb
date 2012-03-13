@@ -1,6 +1,15 @@
 require 'spec_helper'
 
 describe "Cashier" do
+  context "setting the adapter" do
+    subject { Cashier }
+    it "should allow me to set the keys adapter" do
+      subject.respond_to?(:adapter=).should be_true
+    end
+    it "shold allow to get the adapter" do
+      subject.respond_to?(:adapter).should be_true
+    end
+  end
   context "Redis as the cache adapter" do
     
   end
