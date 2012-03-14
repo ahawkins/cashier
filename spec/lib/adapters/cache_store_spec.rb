@@ -59,8 +59,4 @@ describe Cashier::Adapters::CacheStore do
       Rails.cache.read(Cashier::CACHE_KEY).should be_nil
     end
   end
-
-  
-
-
 end

@@ -69,7 +69,7 @@ module Cashier
   end
 
   def keys_for(tag)
-    Rails.cache.fetch(tag) || []
+    adapter.get_fragments_for_tag(tag)
   end
 end
 
