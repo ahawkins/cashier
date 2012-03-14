@@ -91,7 +91,7 @@ describe "Cashier" do
 
       it "should clear the list of tracked tags" do
         subject.clear
-        cache.fetch(Cashier::CACHE_KEY).should be_nil
+        adapter.tags.should == []
       end
     end
 
