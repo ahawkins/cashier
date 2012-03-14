@@ -60,8 +60,10 @@ describe "Cashier" do
       end
 
       it "should remove the tag from the list of tracked tags"  do
+        adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(['fragment-key'])
+        adapter.should_receive(:delete_tag).with('dashboard')
+
         subject.expire('dashboard')
-        Rails.cache.fetch(Cashier::CACHE_KEY).should eql([])
       end
     end
 
