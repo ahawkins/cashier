@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Cashier" do
-  context "setting the adapter" do
+  context "Tags store adapters" do
     subject { Cashier }
     
     it "should allow me to set the keys adapter" do
@@ -13,11 +13,7 @@ describe "Cashier" do
     end
   end
 
-  context "Redis as the cache adapter" do
-    
-  end
-
-  context "Rails.cache as the adapter" do
+  context "Cashier adapters communication through the interface" do
     before(:each) do
       Cashier.adapter = :cache_store
     end
