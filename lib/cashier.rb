@@ -113,13 +113,30 @@ module Cashier
   #   Cashier.wipe
   #
   def wipe
+    warn "[DEPRECATION] `wipe` is deprecated.  Please use `clear` instead."
     clear
   end
 
+  # Public: get all the keys names as an array.
+  #
+  #
+  # Examples
+  #
+  #   Cachier.keys
+  #   # => ['key1', 'key2', 'key3']
+  #
   def keys
     adapter.keys
   end
 
+  # Public: get all the keys for a specific tag as an array.
+  #
+  #
+  # Examples
+  #
+  #   Cashier.tags_for('tag1')
+  #   # => ['key1', 'key2', 'key3']
+  #
   def keys_for(tag)
     adapter.get_fragments_for_tag(tag)
   end
