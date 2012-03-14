@@ -5,7 +5,7 @@ describe Cashier::Adapters::CacheStore do
   let(:cache) { Rails.cache }
   
   it "should store the fragment in a tag" do
-    subject.store_fragment_in_tag('dashboard', 'fragment-key')
+    subject.store_fragment_in_tag('fragment-key', 'dashboard')
     cache.fetch('dashboard').should eql(['fragment-key'])
   end
 
@@ -15,15 +15,15 @@ describe Cashier::Adapters::CacheStore do
   end
 
   it "should return all of the fragments for a given tag" do
-    subject.store_fragment_in_tag('dashboard', 'fragment-key')
-    subject.store_fragment_in_tag('dashboard', 'fragment-key-2')
-    subject.store_fragment_in_tag('dashboard', 'fragment-key-3')
+    subject.store_fragment_in_tag('fragment-key', 'dashboard')
+    subject.store_fragment_in_tag('fragment-key-2', 'dashboard')
+    subject.store_fragment_in_tag('fragment-key-3', 'dashboard')
 
     subject.get_fragments_for_tag('dashboard').length.should == 3
   end
 
   it "should delete a tag from the cache" do
-    subject.store_fragment_in_tag('dashboard', 'fragment-key')
+    subject.store_fragment_in_tag('fragment-key', 'dashboard')
     Rails.cache.read('dashboard').should_not be_nil
 
     subject.delete_tag('dashboard')
@@ -57,6 +57,19 @@ describe Cashier::Adapters::CacheStore do
       subject.should_receive(:remove_tags).with(['dashboard','settings','email'])
       subject.clear
       Rails.cache.read(Cashier::CACHE_KEY).should be_nil
+    end
+  end
+
+  context "keys" do
+    it "should return the list of keys" do
+      
+      subject.store_tags(['dashboard', 'settings', 'email'])
+
+      subject.store_fragment_in_tag('key1', 'dashboard')
+      subject.store_fragment_in_tag('key2', 'settings')
+      subject.store_fragment_in_tag('key3', 'email')
+
+      subject.keys.should eql(%w(key1 key2 key3))
     end
   end
 end

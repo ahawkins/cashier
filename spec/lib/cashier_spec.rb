@@ -22,15 +22,15 @@ describe "Cashier" do
 
     describe "#store_fragment" do
       it "should write the tag to the cache" do
-        adapter.should_receive(:store_fragment_in_tag).with('dashboard', 'fragment-key')
+        adapter.should_receive(:store_fragment_in_tag).with('fragment-key', 'dashboard')
         adapter.should_receive(:store_tags).with(["dashboard"])
 
         subject.store_fragment('fragment-key', 'dashboard')
       end
 
       it "should store the tag for book keeping" do
-        adapter.should_receive(:store_fragment_in_tag).with('dashboard', 'fragment-key')
-        adapter.should_receive(:store_fragment_in_tag).with('settings', 'fragment-key')
+        adapter.should_receive(:store_fragment_in_tag).with('fragment-key', 'dashboard')
+        adapter.should_receive(:store_fragment_in_tag).with('fragment-key', 'settings')
 
         adapter.should_receive(:store_tags).with(["dashboard", "settings"])
 
@@ -97,20 +97,14 @@ describe "Cashier" do
 
     describe '#keys' do
       it "should return an array of all the tracked keys" do
-        subject.store_fragment('key1', 'dashboard')
-        subject.store_fragment('key2', 'settings')
-        subject.store_fragment('key3', 'email')
-
+        adapter.should_receive(:keys).and_return(%w(key1 key2 key3))
         subject.keys.should eql(%w(key1 key2 key3))
       end
     end
 
     describe '#keys_for' do
       it "should return an array of all the keys for the tag" do
-        subject.store_fragment('key1', 'dashboard')
-        subject.store_fragment('key2', 'dashboard')
-        subject.store_fragment('key3', 'dashboard')
-
+        adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(%w(key1 key2 key3))
         subject.keys_for('dashboard').should eql(%w(key1 key2 key3))
       end
     end
