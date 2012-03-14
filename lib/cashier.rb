@@ -113,7 +113,7 @@ module Cashier
   #   Cashier.wipe
   #
   def wipe
-    warn "[DEPRECATION] `wipe` is deprecated.  Please use `clear` instead."
+    ActiveSupport::Deprecation.warn("`wipe` is deprecated.  Please use `clear` instead.")
     clear
   end
 
