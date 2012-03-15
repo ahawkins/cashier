@@ -117,7 +117,20 @@ describe "Cashier" do
     it "should say the performance for storing 1M keys" do
       subject.adapter = :cache_store
       puts Benchmark.measure {
-        10000.times do
+        500.times do
+          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          subject.store_fragment(key, tag, tag2)
+        end
+      }
+    end
+
+    it "should say the performance for storing 1M keys" do
+      subject.adapter = :redis_store
+      subject.adapter.redis = $redis
+      puts Benchmark.measure {
+        500.times do
           key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
           tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
           tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join

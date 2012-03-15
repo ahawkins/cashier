@@ -98,6 +98,25 @@ If you work with very large arrays of keys and tags, you may see slowness in the
 
 Redis was introduces since it has the ability to work with "sets", and you can add/remove tags from this set without reading the entire array.
 
+
+### Benchmarking
+
+Using the cache adapter, this piece of code takes 3 seconds on average
+
+```ruby
+	Benchmark.measure {
+        500.times do
+          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          subject.store_fragment(key, tag, tag2)
+        end
+      }
+```
+
+Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the difference :)
+
+
 ## Testing
 
 I've also included some Rspec Matchers and a cucumber helper for testing
