@@ -114,7 +114,7 @@ describe "Cashier" do
   context "Performace" do
     subject { Cashier }
 
-    it "should say the performance for storing 1M keys" do
+    it "should say the performance for storing 500 keys in the cache store" do
       subject.adapter = :cache_store
       time = Benchmark.measure {
         500.times do
@@ -127,7 +127,7 @@ describe "Cashier" do
       puts "Saving 500 items with 2 tags each to the cache store took #{time}"
     end
 
-    it "should say the performance for storing 1M keys" do
+    it "should say the performance for storing 500 keys in the Redis store" do
       subject.adapter = :redis_store
       subject.adapter.redis = $redis
       time =  Benchmark.measure {
