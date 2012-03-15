@@ -1,1 +1,1 @@
-rvm use 1.9.2@cashier
+rvm use --create 1.9.3@cashier
