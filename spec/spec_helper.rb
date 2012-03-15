@@ -38,9 +38,9 @@ RSpec.configure do |config|
       "databases"     => 16
     }.map { |k, v| "#{k} #{v}" }.join('\n')
     `echo '#{redis_options}' | redis-server -`
-  end
 
-  $redis = Redis.new(:host => '127.0.0.1', :port => 9736)
+    $redis = Redis.new(:host => '127.0.0.1', :port => 9736)
+  end
 
   config.before(:each) do
     $redis.flushdb
