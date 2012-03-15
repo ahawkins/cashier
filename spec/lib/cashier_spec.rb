@@ -116,7 +116,7 @@ describe "Cashier" do
 
     it "should say the performance for storing 1M keys" do
       subject.adapter = :cache_store
-      puts Benchmark.measure {
+      time = Benchmark.measure {
         500.times do
           key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
           tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
@@ -124,12 +124,13 @@ describe "Cashier" do
           subject.store_fragment(key, tag, tag2)
         end
       }
+      puts "Saving 500 items with 2 tags each to the cache store took #{time}"
     end
 
     it "should say the performance for storing 1M keys" do
       subject.adapter = :redis_store
       subject.adapter.redis = $redis
-      puts Benchmark.measure {
+      time =  Benchmark.measure {
         500.times do
           key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
           tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
@@ -137,6 +138,7 @@ describe "Cashier" do
           subject.store_fragment(key, tag, tag2)
         end
       }
+      puts "Saving 500 items with 2 tags each to the redis store took #{time}"
     end
   end
 end
