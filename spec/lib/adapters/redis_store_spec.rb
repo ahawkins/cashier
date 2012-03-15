@@ -6,7 +6,7 @@ describe Cashier::Adapters::RedisStore do
   let(:redis) { $redis }
 
   before(:each) do
-    subject.redis = redis
+    subject.redis = $redis
   end
 
   context "setting and getting the redis instance" do
@@ -20,8 +20,8 @@ describe Cashier::Adapters::RedisStore do
   end
     
   it "should return the redis instance you set" do
-    subject.redis = $redis
-    subject.redis.should == $redis
+    subject.redis = redis
+    subject.redis.should == redis
   end
   
   it "should store the fragment in a tag" do
@@ -31,7 +31,7 @@ describe Cashier::Adapters::RedisStore do
 
   it "should store the tag in the tags array" do
     subject.store_tags(["dashboard"])
-    $redis.smembers(Cashier::CACHE_KEY).should eql(['dashboard'])
+    redis.smembers(Cashier::CACHE_KEY).should eql(['dashboard'])
   end
 
   it "should return all of the fragments for a given tag" do
@@ -44,10 +44,10 @@ describe Cashier::Adapters::RedisStore do
 
   it "should delete a tag from the cache" do
     subject.store_fragment_in_tag('fragment-key', 'dashboard')
-    $redis.smembers('dashboard').should_not be_nil
+    redis.smembers('dashboard').should_not be_nil
 
     subject.delete_tag('dashboard')
-    $redis.exists('dashboard').should be_false
+    redis.exists('dashboard').should be_false
   end
 
   it "should return the list of tags" do
