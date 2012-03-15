@@ -86,7 +86,7 @@ Cashier can work with 2 adapters for the tags storing, `:cache_store` or `:redis
 
 ```ruby
 	Cashier.adapter = :redis_store
-	Cashier.redis = $redis
+	Cashier.adapter.redis = $redis
 ```
 
 `$redis` needs to be a variable that stores your red is instance.
