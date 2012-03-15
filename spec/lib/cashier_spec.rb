@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'benchmark'
 
 describe "Cashier" do
   context "Tags store adapters" do
@@ -107,6 +108,22 @@ describe "Cashier" do
         adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(%w(key1 key2 key3))
         subject.keys_for('dashboard').should eql(%w(key1 key2 key3))
       end
+    end
+  end
+
+  context "Performace" do
+    subject { Cashier }
+
+    it "should say the performance for storing 1M keys" do
+      subject.adapter = :cache_store
+      puts Benchmark.measure {
+        10000.times do
+          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          subject.store_fragment(key, tag, tag2)
+        end
+      }
     end
   end
 end
