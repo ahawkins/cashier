@@ -1,14 +1,6 @@
 require 'spec_helper'
 
-require 'rspec/rails'
-
-class ApplicationController
-  include Cashier::ControllerHelper
-end
-
 describe ApplicationController do
-  include Rspec::Rails::ControllerExampleGroup
-
   it "should be able to tag framgents" do
     Cashier.should_receive(:store_fragment).with('views/key', 'tag')
     controller.write_fragment('key', 'content', :tag => 'tag')

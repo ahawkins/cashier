@@ -1,8 +1,9 @@
 module Cashier
   class Railtie < Rails::Railtie
     initializer 'cashier.initialize' do
-      ApplicationController.send :include, Cashier::ControllerHelper
+      ActiveSupport.on_load(:action_controller) do
+        require 'cashier/application_controller'
+      end
     end
   end
 end
-
