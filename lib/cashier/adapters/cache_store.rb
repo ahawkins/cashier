@@ -40,7 +40,6 @@ module Cashier
       def self.keys
         tags.inject([]) { |arry, tag| arry += Rails.cache.fetch(tag) }.compact
       end
-      
     end
   end
 end
