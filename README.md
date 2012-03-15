@@ -12,7 +12,7 @@ Manage your cache keys with tags, forget about keys!
 
     # can have multiple tags
     cache @something, :tag => ['dashboard', 'settings'] # can expire from either tag
-
+    
     # in an observer
     Cashier.expire 'some-component' # don't worry about keys! Much easier to sweep with confidence
 
@@ -64,9 +64,58 @@ in the controller.
 
 ## How it Works
 
-Cashier hooks into Rails' `expire_fragment` method using `alias_method_chain` to run some code that captures the key
-and tag then stores that in the rails cache. **No external processes are
-needed. All tag/fragment information is stored in the Rails.cache.**
+Cashier hooks into Rails' `store_fragment` method using `alias_method_chain` to run some code that captures the key
+and tag then stores that in the rails cache. 
+
+### Adapters
+Cashier can work with 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
+
+**IMPORTANT**: this store is ONLY for the tags, your fragments will still be stored in `Rails.cache`.
+
+#### Setting an adapter for working with the cache as the tags storage
+
+`config/initializers/cashier.rb`
+
+```ruby
+	Cachier.adapter = :cache_store
+```
+
+#### Setting an adapter for working with Redis as the tags storage
+
+`config/initializers/cashier.rb`
+
+```ruby
+	Cashier.adapter = :redis_store
+	Cashier.adapter.redis = $redis
+```
+
+`$redis` needs to be a variable that stores your red is instance.
+
+### Why Redis?
+The reason Redis was introduced is that while the Rails.cache usage for the tags store is clean and involves no "outer" dependencies, since memcached is limited to read/write, it can slow down the application quite a bit.
+
+If you work with very large arrays of keys and tags, you may see slowness in the cache communication.
+
+Redis was introduces since it has the ability to work with "sets", and you can add/remove tags from this set without reading the entire array.
+
+
+### Benchmarking
+
+Using the cache adapter, this piece of code takes 3 seconds on average
+
+```ruby
+	Benchmark.measure {
+        500.times do
+          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+          subject.store_fragment(key, tag, tag2)
+        end
+      }
+```
+
+Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the difference :)
+
 
 ## Testing
 
