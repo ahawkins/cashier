@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Adam Hawkins"]
   s.email       = ["me@broadcastingadam.com"]
-  s.homepage    = "https://github.com/Adman65/cashier"
+  s.homepage    = "https://github.com/threadedlabs/cashier"
   s.summary     = %q{Tag based caching for Rails using Redis or Memcached}
   s.description = %q{Associate different cached content with a tag, then expire by tag instead of key}
 
