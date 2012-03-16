@@ -9,10 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Adam Hawkins"]
   s.email       = ["me@broadcastingadam.com"]
   s.homepage    = "https://github.com/Adman65/cashier"
-  s.summary     = %q{Tag based caching for Rails}
+  s.summary     = %q{Tag based caching for Rails using Redis or Memcached}
   s.description = %q{Associate different cached content with a tag, then expire by tag instead of key}
-
-  s.rubyforge_project = "cashier"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
@@ -24,7 +22,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'dalli'
-  s.add_development_dependency 'ruby-debug19'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'redis', '~> 2.2.0'
 end
