@@ -3,11 +3,7 @@ require 'spec_helper'
 describe Cashier::Adapters::RedisStore do
   subject { Cashier::Adapters::RedisStore }
   let(:cache) { Rails.cache }
-  let(:redis) { $redis }
-
-  before(:each) do
-    subject.redis = $redis
-  end
+  let(:redis) { subject.redis }
 
   context "setting and getting the redis instance" do
     it "should allow to set the redis instance" do
@@ -18,12 +14,12 @@ describe Cashier::Adapters::RedisStore do
       subject.respond_to?(:redis).should be_true
     end
   end
-    
+
   it "should return the redis instance you set" do
     subject.redis = redis
     subject.redis.should == redis
   end
-  
+
   it "should store the fragment in a tag" do
     subject.store_fragment_in_tag('fragment-key', 'dashboard')
     redis.smembers('dashboard').should eql(['fragment-key'])
@@ -81,7 +77,6 @@ describe Cashier::Adapters::RedisStore do
 
   context "keys" do
     it "should return the list of keys" do
-      
       subject.store_tags(['dashboard', 'settings', 'email'])
 
       subject.store_fragment_in_tag('key1', 'dashboard')
@@ -91,8 +86,4 @@ describe Cashier::Adapters::RedisStore do
       subject.keys.sort.should eql(%w(key1 key2 key3))
     end
   end
-
-
-
-  
 end

@@ -5,6 +5,8 @@ SimpleCov.start
 
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 
+require 'cashier'
+
 ENV['RAILS_ENV'] = 'test'
 require 'dummy/config/environment'
 
@@ -28,11 +30,11 @@ RSpec.configure do |config|
     }.map { |k, v| "#{k} #{v}" }.join('\n')
     `echo '#{redis_options}' | redis-server -`
 
-    $redis = Redis.new(:host => '127.0.0.1', :port => 6397)
+    Cashier::Adapters::RedisStore.redis = Redis.new(:host => '127.0.0.1', :port => 6397)
   end
 
   config.before(:each) do
-    $redis.flushdb
+    Cashier::Adapters::RedisStore.redis.flushdb
     Rails.cache.clear
   end
 
