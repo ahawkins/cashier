@@ -123,24 +123,42 @@ Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the dif
 
 ## Testing
 
+Use can use cashier to test caching as well. First things first:
+
+```ruby
+# test.rb
+
+config.application_controller.perform_caching = true
+```
+
 I've also included some Rspec Matchers and a cucumber helper for testing
 caching. The rspec matchers can be used like this:
 
-  describe "get index" do
-    it "should cache the action" do
-      get :index
-      'some-tag'.should be_cached
-    end
-  end
+```ruby
+describe "get index" do
+  include Cashier::Matchers
 
-Testing w/cucumber is more involved. **Make sure you set perform_caching = true in test.rb**
-Then require `cashier/cucumber` to use the matchers in your steps. Here
+  it "should cache the action" do
+    get :index
+    'some-tag'.should be_cached
+  end
+end
+```
+
+Testing w/cucumber is more involved.
+
+```ruby
+# features/support/cashier.rb
+require 'cashier/cucumber'
+```
+
 is an example of a possible step
 
-    Then /the dashboard should be cached/ do
-      "dashboard".should be_cached
-    end
-
+```ruby
+Then /the dashboard should be cached/ do
+  "dashboard".should be_cached
+end
+```
 Including `cashier/cucumber` will also wipe the cache before every
 scenario.
 
