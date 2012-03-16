@@ -162,6 +162,11 @@ end
 Including `cashier/cucumber` will also wipe the cache before every
 scenario.
 
+## Contributors
+
+* [adman65](http://twitter.com/adman65) - Initial Implementation
+* [KensoDev](http://twitter.com/kensodev) - Adding Redis support (Again \o/)
+
 ## Contributing to Cashier
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
