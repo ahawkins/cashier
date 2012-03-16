@@ -1,10 +1,9 @@
 require 'spec_helper'
-require 'benchmark'
 
 describe "Cashier" do
   context "Tags store adapters" do
     subject { Cashier }
-    
+
     it "should allow me to set the keys adapter" do
       subject.respond_to?(:adapter=).should be_true
     end
@@ -108,37 +107,6 @@ describe "Cashier" do
         adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(%w(key1 key2 key3))
         subject.keys_for('dashboard').should eql(%w(key1 key2 key3))
       end
-    end
-  end
-
-  context "Performace" do
-    subject { Cashier }
-
-    it "should say the performance for storing 500 keys in the cache store" do
-      subject.adapter = :cache_store
-      time = Benchmark.measure {
-        500.times do
-          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          subject.store_fragment(key, tag, tag2)
-        end
-      }
-      puts "Saving 500 items with 2 tags each to the cache store took #{time}"
-    end
-
-    it "should say the performance for storing 500 keys in the Redis store" do
-      subject.adapter = :redis_store
-      subject.adapter.redis = $redis
-      time =  Benchmark.measure {
-        500.times do
-          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          subject.store_fragment(key, tag, tag2)
-        end
-      }
-      puts "Saving 500 items with 2 tags each to the redis store took #{time}"
     end
   end
 end

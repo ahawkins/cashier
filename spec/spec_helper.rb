@@ -28,8 +28,6 @@ RSpec.configure do |config|
     }.map { |k, v| "#{k} #{v}" }.join('\n')
     `echo '#{redis_options}' | redis-server -`
 
-    puts "Stating Redis: 127.0.0.1:6397 (#{REDIS_PID})...."
-
     $redis = Redis.new(:host => '127.0.0.1', :port => 6397)
   end
 
@@ -39,7 +37,6 @@ RSpec.configure do |config|
   end
 
   config.after :suite do
-    puts "Shutting down Redis..."
     Process.kill "TERM", File.read(REDIS_PID).to_i
   end
 end
