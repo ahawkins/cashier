@@ -55,7 +55,6 @@ module Cashier
     adapter.store_tags(tags)
   end
 
-
   # Public: expire tags. expiring the keys 'assigned' to the tags you expire and removes the tags from the tags list
   # 
   # tags - array of tags to expire.
@@ -104,17 +103,6 @@ module Cashier
   #
   def clear
     adapter.clear
-  end
-
-  # Public: aliases to clear (deprecated)
-  #
-  # Examples
-  #
-  #   Cashier.wipe
-  #
-  def wipe
-    ActiveSupport::Deprecation.warn("`wipe` is deprecated.  Please use `clear` instead.")
-    clear
   end
 
   # Public: get all the keys names as an array.

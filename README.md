@@ -4,39 +4,41 @@ Manage your cache keys with tags, forget about keys!
 
 ## What Is It?
 
-    # in your view
-    cache @some_record, :tag => 'some-component'
+```ruby
+# in your view
+cache @some_record, :tag => 'some-component'
 
-    # in another view
-    cache @some_releated_record, :tag => 'some-component'
+# in another view
+cache @some_releated_record, :tag => 'some-component'
 
-    # can have multiple tags
-    cache @something, :tag => ['dashboard', 'settings'] # can expire from either tag
-    
-    # in an observer
-    Cashier.expire 'some-component' # don't worry about keys! Much easier to sweep with confidence
+# can have multiple tags
+cache @something, :tag => ['dashboard', 'settings'] # can expire from either tag
 
-    # in your controller
-    caches_action :tag => 'complicated-action', :cache_path => proc { |c| 
-      # huge complicated mess of parameters
-      c.params
-    }
+# in an observer
+Cashier.expire 'some-component' # don't worry about keys! Much easier to sweep with confidence
 
-    # need to access the controller?
-    caches_action :tag => proc {|c|
-      # c is the controller
-      "users/#{c.current_user.id}/dashboard"      
-    }
+# in your controller
+caches_action :tag => 'complicated-action', :cache_path => proc { |c| 
+  # huge complicated mess of parameters
+  c.params
+}
 
-    # in your sweeper, in your observers, in your resque jobs...wherever
-    Cashier.expire 'complicated-action'
-    Cashier.expire 'tag1', 'tag2', 'tag3', 'tag4'
+# need to access the controller?
+caches_action :tag => proc {|c|
+  # c is the controller
+  "users/#{c.current_user.id}/dashboard"      
+}
 
-    # what's cached
-    Cashier.tags
+# in your sweeper, in your observers, in your resque jobs...wherever
+Cashier.expire 'complicated-action'
+Cashier.expire 'tag1', 'tag2', 'tag3', 'tag4'
 
-    # sweep all stored keys
-    Cashier.clear
+# what's cached
+Cashier.tags
+
+# sweep all stored keys
+Cashier.clear
+```
 
 ## How it Came About
 
@@ -68,7 +70,8 @@ Cashier hooks into Rails' `store_fragment` method using `alias_method_chain` to 
 and tag then stores that in the rails cache. 
 
 ### Adapters
-Cashier can work with 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
+
+Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
 
 **IMPORTANT**: this store is ONLY for the tags, your fragments will still be stored in `Rails.cache`.
 
@@ -77,7 +80,7 @@ Cashier can work with 2 adapters for the tags storing, `:cache_store` or `:redis
 `config/initializers/cashier.rb`
 
 ```ruby
-	Cachier.adapter = :cache_store
+Cachier.adapter = :cache_store
 ```
 
 #### Setting an adapter for working with Redis as the tags storage
@@ -85,18 +88,20 @@ Cashier can work with 2 adapters for the tags storing, `:cache_store` or `:redis
 `config/initializers/cashier.rb`
 
 ```ruby
-	Cashier.adapter = :redis_store
-	Cashier.adapter.redis = $redis
+Cashier.adapter = :redis_store
+Cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697')
 ```
 
-`$redis` needs to be a variable that stores your red is instance.
-
 ### Why Redis?
-The reason Redis was introduced is that while the Rails.cache usage for the tags store is clean and involves no "outer" dependencies, since memcached is limited to read/write, it can slow down the application quite a bit.
+
+The reason Redis was introduced is that while the Rails.cache usage 
+for the tags store is clean and involves no "outer" dependencies, 
+since memcached is limited to read/write, it can slow down the application quite a bit.
 
 If you work with very large arrays of keys and tags, you may see slowness in the cache communication.
 
-Redis was introduces since it has the ability to work with "sets", and you can add/remove tags from this set without reading the entire array.
+Redis was introduces since it has the ability to work with "sets", and 
+you can add/remove tags from this set without reading the entire array.
 
 
 ### Benchmarking
@@ -104,41 +109,63 @@ Redis was introduces since it has the ability to work with "sets", and you can a
 Using the cache adapter, this piece of code takes 3 seconds on average
 
 ```ruby
-	Benchmark.measure {
-        500.times do
-          key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
-          subject.store_fragment(key, tag, tag2)
-        end
-      }
+Benchmark.measure do
+  500.times do
+    key = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+    tag = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+    tag2 = (0...50).map{ ('a'..'z').to_a[rand(26)] }.join
+    Cashier.store_fragment(key, tag, tag2)
+  end
+end
 ```
 
 Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the difference :)
 
-
 ## Testing
+
+Use can use cashier to test caching as well. First things first:
+
+```ruby
+# test.rb
+
+config.application_controller.perform_caching = true
+```
 
 I've also included some Rspec Matchers and a cucumber helper for testing
 caching. The rspec matchers can be used like this:
 
-  describe "get index" do
-    it "should cache the action" do
-      get :index
-      'some-tag'.should be_cached
-    end
-  end
+```ruby
+describe "get index" do
+  include Cashier::Matchers
 
-Testing w/cucumber is more involved. **Make sure you set perform_caching = true in test.rb**
-Then require `cashier/cucumber` to use the matchers in your steps. Here
+  it "should cache the action" do
+    get :index
+    'some-tag'.should be_cached
+  end
+end
+```
+
+Testing w/cucumber is more involved.
+
+```ruby
+# features/support/cashier.rb
+require 'cashier/cucumber'
+```
+
 is an example of a possible step
 
-    Then /the dashboard should be cached/ do
-      "dashboard".should be_cached
-    end
-
+```ruby
+Then /the dashboard should be cached/ do
+  "dashboard".should be_cached
+end
+```
 Including `cashier/cucumber` will also wipe the cache before every
 scenario.
+
+## Contributors
+
+* [adman65](http://twitter.com/adman65) - Initial Implementation
+* [KensoDev](http://twitter.com/kensodev) - Adding Redis support (Again \o/)
 
 ## Contributing to Cashier
  
@@ -154,4 +181,3 @@ scenario.
 
 Copyright (c) 2010 Adam Hawkins. See LICENSE.txt for
 further details.
-

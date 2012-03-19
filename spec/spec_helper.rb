@@ -1,49 +1,44 @@
 require 'simplecov'
-require 'redis/connection/hiredis'
 require 'redis'
 
 SimpleCov.start
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
+$: << File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'cashier'
 
 ENV['RAILS_ENV'] = 'test'
 require 'dummy/config/environment'
 
 require 'rspec/rails'
 
+require 'fileutils'
 
 RSpec.configure do |config|
   # ==========================> Redis test configuration
-  REDIS_PID = "#{Rails.root}/tmp/pids/redis-test.pid"
-  REDIS_CACHE_PATH = "#{Rails.root}/tmp/cache/"
+  REDIS_PID = Rails.root.join 'tmp', 'pids', 'redis.pid'
 
-  Dir.mkdir "#{Rails.root}/tmp" unless Dir.exists? "#{Rails.root}/tmp"
-  Dir.mkdir "#{Rails.root}/tmp/pids" unless Dir.exists? "#{Rails.root}/tmp/pids"
-  Dir.mkdir "#{Rails.root}/tmp/cache" unless Dir.exists? "#{Rails.root}/tmp/cache"
+  FileUtils.mkdir_p Rails.root.join 'tmp', 'pids'
+  FileUtils.mkdir_p Rails.root.join 'tmp', 'cache'
 
   config.before(:suite) do
     redis_options = {
       "daemonize"     => 'yes',
       "pidfile"       => REDIS_PID,
-      "port"          => 9736,
-      "timeout"       => 300,
-      "save 900"      => 1,
-      "save 300"      => 1,
-      "save 60"       => 10000,
-      "dbfilename"    => "dump.rdb",
-      "dir"           => REDIS_CACHE_PATH,
-      "loglevel"      => "debug",
-      "logfile"       => "stdout",
-      "databases"     => 16
+      "port"          => 6397,
+      "dir"           => Rails.root.join('tmp', 'cache'),
     }.map { |k, v| "#{k} #{v}" }.join('\n')
     `echo '#{redis_options}' | redis-server -`
+
+    Cashier::Adapters::RedisStore.redis = Redis.new(:host => '127.0.0.1', :port => 6397)
   end
 
-  $redis = Redis.new(:host => '127.0.0.1', :port => 9736)
-
   config.before(:each) do
-    $redis.flushdb
+    Cashier::Adapters::RedisStore.redis.flushdb
     Rails.cache.clear
+  end
+
+  config.after :suite do
+    Process.kill "TERM", File.read(REDIS_PID).to_i
   end
 end

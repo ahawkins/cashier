@@ -1,6 +1,5 @@
 module Cashier
   module Matchers
-
     def be_cached
       Cache.new
     end
