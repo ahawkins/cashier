@@ -130,8 +130,19 @@ Benchmark.measure do
   end
 end
 ```
-
 Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the difference :)
+
+
+### Plugins
+Cashier is pluggable through callback methods.
+You can write plugins of your own, for example:
+1. Storing URL for each key
+2. invalidating the full page cache URL after a key has been removed.
+
+At [Gogobot](http://www.gogobot.com) we have a plugin to invalidate the external CDN cache on full pages for logged out users.
+The usage is pretty unlimited.
+
+If you think we're missing a callback, please do open an issue or be awesome and do it yourself and open a pull request.
 
 ## Testing
 
