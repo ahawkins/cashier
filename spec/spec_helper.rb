@@ -1,5 +1,6 @@
 require 'simplecov'
 require 'redis'
+require 'dalli'
 
 SimpleCov.start
 

@@ -24,5 +24,6 @@ class ApplicationController < ActionController::Base
     end
     write_fragment_without_tagged_key(key, content, options)
   end
+  
   alias_method_chain :write_fragment, :tagged_key
 end
