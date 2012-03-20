@@ -21,8 +21,19 @@ class ApplicationController < ActionController::Base
                options[:tag]
              end
     end
+    if options && options[:tag]
+
+    end
+    tag_option = options.delete(:tag)
+    tags = case tag_option.class.to_s
+             when 'Proc', 'Lambda'
+               tag.call(self)
+             else 
+               tag
+             end
+
+    options = options.merge({:tag => tags}) if tags
     write_fragment_without_tagged_key(key, content, options)
   end
-  
   alias_method_chain :write_fragment, :tagged_key
 end
