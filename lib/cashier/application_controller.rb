@@ -13,17 +13,6 @@
 
 class ApplicationController < ActionController::Base
   def write_fragment_with_tagged_key(key, content, options = nil)
-    if options && options[:tag] && Cashier.perform_caching? 
-      tags = case options[:tag].class.to_s
-             when 'Proc', 'Lambda'
-               options[:tag].call(self)
-             else 
-               options[:tag]
-             end
-    end
-    if options && options[:tag]
-
-    end
     tag_option = options.delete(:tag)
     tags = case tag_option.class.to_s
              when 'Proc', 'Lambda'
