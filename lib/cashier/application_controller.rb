@@ -20,7 +20,6 @@ class ApplicationController < ActionController::Base
              else 
                options[:tag]
              end
-      Cashier.store_fragment fragment_cache_key(key), *tags
     end
     write_fragment_without_tagged_key(key, content, options)
   end

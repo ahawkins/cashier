@@ -16,7 +16,6 @@ module ActiveSupport
 
         fetch_without_tags(key, options)
       end
-
       alias_method_chain :fetch, :tags
 
       def write_with_tags(key, value, options = {})

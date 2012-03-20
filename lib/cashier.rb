@@ -132,7 +132,6 @@ end
 
 
 require 'rails'
-require 'dalli'
 require 'active_support/cache/dalli_store_additions'
 require 'cashier/railtie'
 require 'cashier/adapters/cache_store'
