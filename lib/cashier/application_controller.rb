@@ -16,9 +16,9 @@ class ApplicationController < ActionController::Base
     tag_option = options.delete(:tag)
     tags = case tag_option.class.to_s
              when 'Proc', 'Lambda'
-               tag.call(self)
+               tag_option.call(self)
              else 
-               tag
+               tag_option
              end
 
     options = options.merge({:tag => tags}) if tags
