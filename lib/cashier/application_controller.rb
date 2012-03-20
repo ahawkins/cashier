@@ -13,15 +13,15 @@
 
 class ApplicationController < ActionController::Base
   def write_fragment_with_tagged_key(key, content, options = nil)
-    if options && options[:tag] && Cashier.perform_caching? 
-      tags = case options[:tag].class.to_s
+    tag_option = options.delete(:tag)
+    tags = case tag_option.class.to_s
              when 'Proc', 'Lambda'
-               options[:tag].call(self)
+               tag_option.call(self)
              else 
-               options[:tag]
+               tag_option
              end
-      Cashier.store_fragment fragment_cache_key(key), *tags
-    end
+
+    options = options.merge({:tag => tags}) if tags
     write_fragment_without_tagged_key(key, content, options)
   end
   alias_method_chain :write_fragment, :tagged_key

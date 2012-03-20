@@ -130,7 +130,9 @@ module Cashier
   end
 end
 
+
 require 'rails'
+require 'active_support/cache/dalli_store_additions'
 require 'cashier/railtie'
 require 'cashier/adapters/cache_store'
 require 'cashier/adapters/redis_store'

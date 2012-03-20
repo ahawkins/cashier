@@ -29,9 +29,21 @@ caches_action :tag => proc {|c|
   "users/#{c.current_user.id}/dashboard"      
 }
 
-# in your sweeper, in your observers, in your resque jobs...wherever
+# in your sweeper, in your observers, in your Resque jobs...wherever
 Cashier.expire 'complicated-action'
 Cashier.expire 'tag1', 'tag2', 'tag3', 'tag4'
+
+# It integrates smoothly with Rails.cache as well, not just the views
+Rails.cache.fetch("user_1", :tag => ["users"]) { User.find(1) }
+Rails.cache.fetch("user_2", :tag => ["users"]) { User.find(2) }
+Rails.cache.fetch("user_3", :tag => ["users"]) { User.find(3) }
+Rails.cache.fetch("admins", :tag => ["users"]) { User.where(role: "Admin").all }
+
+# You can then expire all your users 
+Cashier.expire "users"
+
+# You can also use Rails.cache.write
+Rails.cache.write("foo", "bar", :tag => ["some_tag"])
 
 # what's cached
 Cashier.tags

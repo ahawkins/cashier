@@ -1,3 +1,6 @@
+spec/dummy/log
 spec/dummy/tmp/pids
 spec/dummy/tmp/cache
 Gemfile.lock
+.rvmrc
+coverage*

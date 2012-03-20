@@ -7,7 +7,7 @@ describe ApplicationController do
   end
 
   it "should be able write a fragment with multiple tags" do
-    Cashier.should_receive(:store_fragment).with('views/key', 'tag1', 'tag2')
+    Cashier.should_receive(:store_fragment).with('views/key', ['tag1', 'tag2'])
     controller.write_fragment('key', 'content', :tag => %w(tag1 tag2))
   end
 
