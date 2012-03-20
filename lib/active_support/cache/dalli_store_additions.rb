@@ -10,22 +10,19 @@ module ActiveSupport
     # DalliStore implements the Strategy::LocalCache strategy which implements
     # an in memory cache inside of a block.
     class DalliStore < Store
-      def fetch_with_tags(key, options)
-        puts "Something fancy happened :: fetch"  
+      def fetch_with_tags(key, options = {})
         fetch_without_tags(key, options)
       end
 
       alias_method_chain :fetch, :tags
 
-      def write_with_tags(key, value, options)
-        puts "Something fancy happened :: write"  
-        write_without_tags(key, options)
+      def write_with_tags(key, value, options = {})
+        write_without_tags(key, value, options)
       end
 
       alias_method_chain :write, :tags
 
       def delete_with_tags(key, options = nil)
-        puts "Something fancy happened :: delete"  
         delete_without_tags(key, options)
       end
 

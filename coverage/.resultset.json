@@ -142,6 +142,40 @@
         1,
         1
       ],
+      "/Users/avitzurel/Dropbox/Projects/open_source/cashier/lib/active_support/cache/dalli_store_additions.rb": [
+        1,
+        1,
+        1,
+        null,
+        1,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        1,
+        56,
+        null,
+        null,
+        1,
+        null,
+        1,
+        55,
+        null,
+        null,
+        1,
+        null,
+        1,
+        5,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null
+      ],
       "/Users/avitzurel/Dropbox/Projects/open_source/cashier/lib/cashier/railtie.rb": [
         1,
         1,
@@ -791,6 +825,6 @@
         null
       ]
     },
-    "timestamp": 1332246590
+    "timestamp": 1332251390
   }
 }

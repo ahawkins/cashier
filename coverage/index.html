@@ -23,26 +23,26 @@
       <img src="./assets/0.5.3/loading.gif" alt="loading"/>
     </div>
     <div id="wrapper" style="display:none;">
-      <div class="timestamp">Generated <abbr class="timeago" title="2012-03-20T14:29:50+02:00">2012-03-20T14:29:50+02:00</abbr></div>
+      <div class="timestamp">Generated <abbr class="timeago" title="2012-03-20T15:49:50+02:00">2012-03-20T15:49:50+02:00</abbr></div>
       <ul class="group_tabs"></ul>
 
       <div id="content">
         <div class="file_list_container" id="AllFiles">
   <h2>
     <span class="group_name">All Files</span>
-    (<span class="covered_percent"><span class="green">99.67%</span></span>
+    (<span class="covered_percent"><span class="green">99.69%</span></span>
      covered at
      <span class="covered_strength">
        <span class="green">
-         1.8
+         2.09
        </span>
     </span> hits/line)
   </h2>
   <a name="AllFiles"></a>
   <div>
-    <b>22</b> files in total.
-    <b>304</b> relevant lines. 
-    <span class="green"><b>303</b> lines covered</span> and
+    <b>23</b> files in total.
+    <b>319</b> relevant lines. 
+    <span class="green"><b>318</b> lines covered</span> and
     <span class="red"><b>1</b> lines missed </span>
   </div>
   <table class="file_list">
@@ -58,6 +58,16 @@
       </tr>
     </thead>
     <tbody>
+      
+      <tr>
+        <td class="strong"><a href="#c0214f7130c235c475b93fe34b986e918c7d0b65" class="src_link" title="lib/active_support/cache/dalli_store_additions.rb">lib/active_support/cache/dalli_store_additions.rb</a></td>
+        <td class="green strong">100.0 %</td>
+        <td>32</td>
+        <td>15</td>
+        <td>15</td>
+        <td>0</td>
+        <td>8.5</td>
+      </tr>
       
       <tr>
         <td class="strong"><a href="#f080984607b6267d8f3bab5d9e0e58f01ef81fa3" class="src_link" title="lib/cashier.rb">lib/cashier.rb</a></td>
@@ -294,6 +304,216 @@
       </div>
     
       <div class="source_files">
+      
+        <div class="source_table" id="c0214f7130c235c475b93fe34b986e918c7d0b65">
+  <div class="header">
+    <h3>lib/active_support/cache/dalli_store_additions.rb</h3>
+    <h4><span class="green">100.0 %</span> covered</h4>
+    <div>
+      <b>15</b> relevant lines. 
+      <span class="green"><b>15</b> lines covered</span> and
+      <span class="red"><b>0</b> lines missed.</span>
+    </div>
+  </div>
+  
+  <pre>
+    <ol>
+      
+        <li class="covered" data-hits="1" data-linenumber="1">
+          <span class="hits">1</span>
+          
+          <code class="ruby">require 'dalli'</code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="2">
+          <span class="hits">1</span>
+          
+          <code class="ruby">require 'digest/md5'</code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="3">
+          <span class="hits">1</span>
+          
+          <code class="ruby">require 'active_support/cache'</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="4">
+          
+          
+          <code class="ruby"></code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="5">
+          <span class="hits">1</span>
+          
+          <code class="ruby">module ActiveSupport</code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="6">
+          <span class="hits">1</span>
+          
+          <code class="ruby">  module Cache</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="7">
+          
+          
+          <code class="ruby">    # A cache store implementation which stores data in Memcached:</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="8">
+          
+          
+          <code class="ruby">    # http://www.memcached.org</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="9">
+          
+          
+          <code class="ruby">    #</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="10">
+          
+          
+          <code class="ruby">    # DalliStore implements the Strategy::LocalCache strategy which implements</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="11">
+          
+          
+          <code class="ruby">    # an in memory cache inside of a block.</code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="12">
+          <span class="hits">1</span>
+          
+          <code class="ruby">    class DalliStore &lt; Store</code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="13">
+          <span class="hits">1</span>
+          
+          <code class="ruby">      def fetch_with_tags(key, options = {})</code>
+        </li>
+      
+        <li class="covered" data-hits="56" data-linenumber="14">
+          <span class="hits">56</span>
+          
+          <code class="ruby">        fetch_without_tags(key, options)</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="15">
+          
+          
+          <code class="ruby">      end</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="16">
+          
+          
+          <code class="ruby"></code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="17">
+          <span class="hits">1</span>
+          
+          <code class="ruby">      alias_method_chain :fetch, :tags</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="18">
+          
+          
+          <code class="ruby"></code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="19">
+          <span class="hits">1</span>
+          
+          <code class="ruby">      def write_with_tags(key, value, options = {})</code>
+        </li>
+      
+        <li class="covered" data-hits="55" data-linenumber="20">
+          <span class="hits">55</span>
+          
+          <code class="ruby">        write_without_tags(key, value, options)</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="21">
+          
+          
+          <code class="ruby">      end</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="22">
+          
+          
+          <code class="ruby"></code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="23">
+          <span class="hits">1</span>
+          
+          <code class="ruby">      alias_method_chain :write, :tags</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="24">
+          
+          
+          <code class="ruby"></code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="25">
+          <span class="hits">1</span>
+          
+          <code class="ruby">      def delete_with_tags(key, options = nil)</code>
+        </li>
+      
+        <li class="covered" data-hits="5" data-linenumber="26">
+          <span class="hits">5</span>
+          
+          <code class="ruby">        delete_without_tags(key, options)</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="27">
+          
+          
+          <code class="ruby">      end</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="28">
+          
+          
+          <code class="ruby"></code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="29">
+          <span class="hits">1</span>
+          
+          <code class="ruby">      alias_method_chain :delete, :tags</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="30">
+          
+          
+          <code class="ruby">    end</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="31">
+          
+          
+          <code class="ruby">  end</code>
+        </li>
+      
+        <li class="never" data-hits="" data-linenumber="32">
+          
+          
+          <code class="ruby">end</code>
+        </li>
+      
+    </ol>
+  </pre>
+</div>
       
         <div class="source_table" id="f080984607b6267d8f3bab5d9e0e58f01ef81fa3">
   <div class="header">
@@ -1122,7 +1342,7 @@
         <li class="covered" data-hits="1" data-linenumber="136">
           <span class="hits">1</span>
           
-          <code class="ruby">require 'active_support/cache/dalli_store'</code>
+          <code class="ruby">require 'active_support/cache/dalli_store_additions'</code>
         </li>
       
         <li class="covered" data-hits="1" data-linenumber="137">
