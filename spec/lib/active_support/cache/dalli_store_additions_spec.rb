@@ -17,10 +17,6 @@ describe "DalliStoreAdditions" do
     end
   end
 
-  context "delete" do
-
-  end
-
   context "fetch" do
     it "should write to cashier when I call Rails.cache.fetch with tags" do
       cashier.should_receive(:store_fragment).with("foo", ["some_tag"])
