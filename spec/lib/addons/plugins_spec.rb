@@ -9,7 +9,7 @@ describe Cashier::Addons::Plugins do
   end
 
   it "should have add_plugin method" do
-    subject.respond_to?(:add_plugin).should be_true
+    subject.should respond_to(:add_plugin)
   end
 
   it "should have plugins method that returns an array" do
@@ -18,7 +18,7 @@ describe Cashier::Addons::Plugins do
 
   it "should be able to add a plugin" do
     subject.add_plugin(DummyPlugin)
-    subject.plugins.include?(DummyPlugin).should be_true
+    subject.plugins.should include(DummyPlugin)
   end
 
   it "should raise a callback when I call store_fragment" do
