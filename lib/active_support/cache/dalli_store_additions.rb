@@ -20,8 +20,6 @@ module ActiveSupport
 
 
       def delete_with_tags(key, options = nil)
-        puts Cashier::Addons::Plugins.class
-        puts Cashier::Addons::Plugins.methods
         Cashier::Addons::Plugins.call_plugin_method(:on_delete_key, key)
         delete_without_tags(key, options)
       end
