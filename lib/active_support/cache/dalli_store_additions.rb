@@ -24,7 +24,6 @@ module ActiveSupport
 
       def delete_with_tags(key, options = nil)
         Cashier::Addons::Plugins.call_plugin_method(:on_cache_delete, key)
-
         delete_without_tags(key, options)
       end
 

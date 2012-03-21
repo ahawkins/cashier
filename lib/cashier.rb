@@ -29,7 +29,7 @@ module Cashier
   #
   def store_fragment(fragment, *tags)
     return unless perform_caching?
-    Cashier::Addons::Plugins.call_plugin_method(:on_store_fragment, fragment, tags)
+    Cashier::Addons::Plugins.call_plugin_method(:on_store_fragment, [fragment, tags])
 
     tags.each do |tag|
       # store the fragment
