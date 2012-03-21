@@ -144,6 +144,11 @@ describe "Cashier" do
       subject.expire("some_tag")
     end
 
+    it "should raise a callback when I call Rails.cache.delete" do
+      subject.should_receive(:call_plugin_method).with(:on_delete_key, "some_key")
+      Rails.cache.delete("some_key")
+    end
+
 
 
   end
