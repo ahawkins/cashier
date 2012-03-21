@@ -1,21 +1,9 @@
 require 'spec_helper'
 
 describe "Cashier" do
-  context "Tags store adapters" do
-    subject { Cashier }
-
-    it "should allow me to set the keys adapter" do
-      subject.respond_to?(:adapter=).should be_true
-    end
-
-    it "shold allow to get the adapter" do
-      subject.respond_to?(:adapter).should be_true
-    end
-  end
-
   context "Cashier adapters communication through the interface" do
     before(:each) do
-      Cashier.adapter = :cache_store
+      Cashier::Addons::Adapters.adapter = :cache_store
     end
     subject { Cashier }
     let(:adapter) { Cashier.adapter }

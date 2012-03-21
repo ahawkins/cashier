@@ -5,7 +5,7 @@ describe Cashier::Addons::Plugins do
     let(:cashier) { Cashier }
 
     before(:each) do
-      Cashier.adapter = :cache_store
+      Cashier::Addons::Adapters.adapter = :cache_store
     end
 
     it "should have add_plugin method" do
