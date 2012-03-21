@@ -92,15 +92,17 @@ Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
 `config/initializers/cashier.rb`
 
 ```ruby
-Cachier::Addons::Adapters.adapter = :cache_store
+Cashier::Addons::Adapters.adapter = :cache_store
 ```
+![image](http://)
+
 
 #### Setting an adapter for working with Redis as the tags storage
 
 `config/initializers/cashier.rb`
 
 ```ruby
-Cachier::Addons::Adapters.adapter = :redis_store
+Cashier::Addons::Adapters.adapter = :redis_store
 Cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697')
 ```
 
