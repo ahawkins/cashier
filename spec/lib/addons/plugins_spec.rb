@@ -43,7 +43,7 @@ describe Cashier::Addons::Plugins do
     Rails.cache.delete("some_key")
   end
 
-  it "should rails a callback when I call Rails.cache.write" do
+  it "should raise a callback when I call Rails.cache.write" do
     subject.should_receive(:call_plugin_method).with(:on_cache_write, "foo")
     Rails.cache.write("foo", "bar")
   end
