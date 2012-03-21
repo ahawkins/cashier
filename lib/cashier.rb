@@ -59,7 +59,7 @@ module Cashier
 
   def call_plugin_method(method_name, *args)
     plugins.each do |plugin|
-      plugin.send(method_name, args) if plugin.respond_to(method_name)
+      plugin.send(method_name, args) if plugin.respond_to?(method_name)
     end
   end
 
