@@ -4,3 +4,5 @@ spec/dummy/tmp/cache
 Gemfile.lock
 .rvmrc
 coverage*
+.tags
+.tags_sorted_by_file

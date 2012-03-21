@@ -3,6 +3,40 @@ module Cashier
 
   CACHE_KEY = 'cashier-tags'
 
+  # Public: Add plugin klass to the plugins array.
+  #
+  # plugin_klass - the plugin klass which defines all/some of the callback methods.
+  #
+  # Examples
+  #
+  #   Cashier.add_plugin(CashierCotendo)
+  #
+  def add_plugin(plugin_klass)
+    plugins << plugin_klass
+  end
+
+  # Public: plugins array.
+  #
+  # Examples
+  #
+  #   Cashier.plugins
+  #   # => [CashierCotendo, SomeOtherPlugin]
+  #
+  def plugins
+    @@plugins ||= []
+    @@plugins
+  end
+
+  # Public: adapter which is used by cashier.
+  #
+  # Examples
+  #
+  #   Cashier.adapter
+  #   # => Cashier::Adapters::CacheStore
+  # 
+  #   Cashier.adapter
+  #   # => Cashier::Adapters::RedisStore
+  #
   def adapter
     if @@adapter == :cache_store
       Cashier::Adapters::CacheStore
@@ -21,6 +55,12 @@ module Cashier
   #
   def adapter=(cache_adapter)
     @@adapter = cache_adapter
+  end
+
+  def call_plugin_method(method_name, *args)
+    plugins.each do |plugin|
+      plugin.send(method_name, args) if plugin.respond_to(method_name)
+    end
   end
 
   # Public: whether the module will perform caching or not. this is being set in the application layer .perform_caching configuration
@@ -45,6 +85,7 @@ module Cashier
   #
   def store_fragment(fragment, *tags)
     return unless perform_caching?
+    call_plugin_method(:on_store_fragment, fragment, tags)
 
     tags.each do |tag|
       # store the fragment
