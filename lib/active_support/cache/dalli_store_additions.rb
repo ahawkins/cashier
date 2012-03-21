@@ -17,6 +17,7 @@ module ActiveSupport
       end
       alias_method_chain :write, :tags
 
+
       def delete_with_tags(key, options = nil)
         Cashier.call_plugin_method(:on_delete_key, key)
         delete_without_tags(key, options)
