@@ -3,30 +3,6 @@ module Cashier
 
   CACHE_KEY = 'cashier-tags'
 
-  # Public: Add plugin klass to the plugins array.
-  #
-  # plugin_klass - the plugin klass which defines all/some of the callback methods.
-  #
-  # Examples
-  #
-  #   Cashier.add_plugin(CashierCotendo)
-  #
-  def add_plugin(plugin_klass)
-    plugins << plugin_klass
-  end
-
-  # Public: plugins array.
-  #
-  # Examples
-  #
-  #   Cashier.plugins
-  #   # => [CashierCotendo, SomeOtherPlugin]
-  #
-  def plugins
-    @@plugins ||= []
-    @@plugins
-  end
-
   # Public: adapter which is used by cashier.
   #
   # Examples
@@ -57,16 +33,6 @@ module Cashier
     @@adapter = cache_adapter
   end
 
-  def call_plugin_method(method_name, *args)
-    plugins.each do |plugin|
-      begin
-        plugin.send(method_name, args) if plugin.respond_to?(method_name)  
-      rescue Exception => e
-        
-      end
-    end
-  end
-
   # Public: whether the module will perform caching or not. this is being set in the application layer .perform_caching configuration
   #
   # Examples
@@ -89,7 +55,7 @@ module Cashier
   #
   def store_fragment(fragment, *tags)
     return unless perform_caching?
-    call_plugin_method(:on_store_fragment, fragment, tags)
+    Cashier::Addons::Plugins.call_plugin_method(:on_store_fragment, fragment, tags)
 
     tags.each do |tag|
       # store the fragment
@@ -110,7 +76,7 @@ module Cashier
   # 
   def expire(*tags)
     return unless perform_caching?
-    call_plugin_method(:on_expire, tags)
+    Cashier::Addons::Plugins.call_plugin_method(:on_expire, tags)
 
     # delete them from the cache
     tags.each do |tag|
@@ -148,7 +114,7 @@ module Cashier
   #   Cashier.clear
   #
   def clear
-    call_plugin_method(:on_clear)
+    Cashier::Addons::Plugins.call_plugin_method(:on_clear)
     adapter.clear
   end
 
@@ -179,7 +145,8 @@ end
 
 
 require 'rails'
-require 'active_support/cache/dalli_store_additions'
 require 'cashier/railtie'
+require 'cashier/addons/plugins'
+require 'active_support/cache/dalli_store_additions'
 require 'cashier/adapters/cache_store'
 require 'cashier/adapters/redis_store'

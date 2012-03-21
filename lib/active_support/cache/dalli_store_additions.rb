@@ -1,6 +1,7 @@
 require 'dalli'
 require 'digest/md5'
 require 'active_support/cache'
+require 'cashier/addons/plugins'
 
 module ActiveSupport
   module Cache
@@ -19,7 +20,9 @@ module ActiveSupport
 
 
       def delete_with_tags(key, options = nil)
-        Cashier.call_plugin_method(:on_delete_key, key)
+        puts Cashier::Addons::Plugins.class
+        puts Cashier::Addons::Plugins.methods
+        Cashier::Addons::Plugins.call_plugin_method(:on_delete_key, key)
         delete_without_tags(key, options)
       end
       alias_method_chain :delete, :tags
