@@ -19,8 +19,8 @@ module Cashier
         #
         #   Cashier.add_plugin(CashierCotendo)
         #
-        def self.add_plugin(plugin_klass)
-          plugins << plugin_klass
+        def self.add_plugin(klass)
+          plugins << klass
         end
 
         # Public: plugins array.
@@ -32,7 +32,6 @@ module Cashier
         #
         def self.plugins
           @@plugins ||= []
-          @@plugins
         end
     end
   end
