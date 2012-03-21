@@ -106,6 +106,7 @@ module Cashier
   # 
   def expire(*tags)
     return unless perform_caching?
+    call_plugin_method(:on_expire, tags)
 
     # delete them from the cache
     tags.each do |tag|
@@ -143,6 +144,7 @@ module Cashier
   #   Cashier.clear
   #
   def clear
+    call_plugin_method(:on_clear)
     adapter.clear
   end
 

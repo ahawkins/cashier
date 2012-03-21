@@ -134,5 +134,17 @@ describe "Cashier" do
       subject.store_fragment("foo", "bar")
     end
 
+    it "should raise a callback method when I call clear" do
+      subject.should_receive(:call_plugin_method).with(:on_clear)
+      subject.clear
+    end
+
+    it "should raise a callback method when I call expire" do
+      subject.should_receive(:call_plugin_method).with(:on_expire, ["some_tag"])
+      subject.expire("some_tag")
+    end
+
+
+
   end
 end
