@@ -148,8 +148,5 @@ describe "Cashier" do
       subject.should_receive(:call_plugin_method).with(:on_delete_key, "some_key")
       Rails.cache.delete("some_key")
     end
-
-
-
   end
 end
