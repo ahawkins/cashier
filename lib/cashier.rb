@@ -119,7 +119,6 @@ end
 
 
 require 'rails'
-require 'cashier/railtie'
 require 'cashier/addons/plugins'
 require 'cashier/addons/adapters'
 require 'active_support/cache/dalli_store_additions'
