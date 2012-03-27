@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Cashier::Addons::Adapters do
-  subject { Cashier::Addons::Adapters }
+describe Cashier::StoreAdapters do
+  subject { Cashier::StoreAdapters }
 
   it "should allow me to set the keys adapter" do
     subject.respond_to?(:adapter=).should be_true

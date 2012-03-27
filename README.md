@@ -135,13 +135,16 @@ end
 Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the difference :)
 
 
-### Plugins
-Cashier is pluggable through callback methods.
-You can write plugins of your own, for example:
+### Notifications
 
-1. Storing URL for each key
-2. invalidating the full page cache URL after a key has been removed.
-3. whatever else you might want :-)
+Cashier will send out events when things happen inside the library.
+The events are sent out through `ActiveSupport::Notifications` so you can pretty much subscribe to the events from anywhere you want.
+
+Here are the way you can subscribe to the events and use the data from them.
+
+```ruby
+#
+```
 
 At [Gogobot](http://www.gogobot.com) we have a plugin to invalidate the external CDN cache on full pages for logged out users.
 The usage is pretty unlimited.
