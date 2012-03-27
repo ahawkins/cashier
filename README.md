@@ -94,8 +94,6 @@ Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
 ```ruby
 Cashier::StoreAdapters.adapter = :cache_store
 ```
-![image](http://)
-
 
 #### Setting an adapter for working with Redis as the tags storage
 
