@@ -92,7 +92,7 @@ Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
 `config/initializers/cashier.rb`
 
 ```ruby
-Cashier::Addons::Adapters.adapter = :cache_store
+Cashier::StoreAdapters.adapter = :cache_store
 ```
 ![image](http://)
 
@@ -102,7 +102,7 @@ Cashier::Addons::Adapters.adapter = :cache_store
 `config/initializers/cashier.rb`
 
 ```ruby
-Cashier::Addons::Adapters.adapter = :redis_store
+Cashier::StoreAdapters.adapter = :redis_store
 Cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697')
 ```
 
@@ -142,16 +142,39 @@ The events are sent out through `ActiveSupport::Notifications` so you can pretty
 
 Here are the way you can subscribe to the events and use the data from them.
 
+
 ```ruby
-#
+	# Subscribe to the store fragment event, this is fired every time cashier will call the "store_fragment" method
+	# payload[:data] will be something like this: ["key", ["tag1", "tag2", "tag3"]]
+	ActiveSupport::Notifications.subscribe("cashier.store_fragment") do |name, start, finish, id, payload|
+				
+	end
+	
+	# Subscribe to the clear event. (no data)
+	ActiveSupport::Notifications.subscribe("cashier.clear") do |name, start, finish, id, payload|
+				
+	end	
+	
+	# Subscribe to the delete_cache_key event
+	# this event will fire every time there's a Rails.cache.delete with the key
+	# payload[:data] will be the key name that's been deleted from the cache
+	ActiveSupport::Notifications.subscribe("cashier.delete_cache_key") do |name, start, finish, id, payload|
+				
+	end	
+
+	# Subscribe to the o_write_cache_key event
+	# this event will fire every time there's a Rails.cache.write with the key
+	# payload[:data] will be the key name that's been written to the cache
+	ActiveSupport::Notifications.subscribe("cashier.write_cache_key") do |name, start, finish, id, payload|
+				
+	end		
 ```
 
+### Notifications use case
 At [Gogobot](http://www.gogobot.com) we have a plugin to invalidate the external CDN cache on full pages for logged out users.
 The usage is pretty unlimited.
 
-It's very easy to write a plugin for cashier, more about that in the Wiki pages
-
-If you think we're missing a callback, please do open an issue or be awesome and do it yourself and open a pull request.
+If you think we're missing a notification, please do open an issue or be awesome and do it yourself and open a pull request.
 
 ## Testing
 
