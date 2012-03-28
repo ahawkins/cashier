@@ -12,7 +12,7 @@ module ActiveSupport
     class DalliStore < Store
       def write_with_tags(key, value, options = {})
         ActiveSupport::Notifications.instrument("cashier.write_cache_key", :data => key) do
-          tags = options.delete(:tag)
+          tags = (options.nil?) ? options : options.delete(:tag)
           Cashier.store_fragment(key, tags) if tags
 
           write_without_tags(key, value, options)

@@ -15,6 +15,10 @@ describe "DalliStoreAdditions" do
       cashier.should_not_receive(:store_fragment)
       subject.write("foo", "bar")
     end
+
+    it "should not fail when I don't pass in any options" do
+      expect { subject.write("foo", "bar", nil) }.to_not raise_error
+    end
   end
 
   context "fetch" do
