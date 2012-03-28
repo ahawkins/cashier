@@ -1,26 +1,11 @@
 module Cashier
+
   extend self
 
   CACHE_KEY = 'cashier-tags'
 
   def adapter
-    if @@adapter == :cache_store
-      Cashier::Adapters::CacheStore
-    else
-      Cashier::Adapters::RedisStore
-    end
-  end
-
-  # Public: set the adapter the Cashier module will use to store the keys
-  #
-  # cache_adapter - :cache_store / :redis_store
-  #
-  # Examples
-  #
-  #   Cashier.adapter = :redis_store
-  #
-  def adapter=(cache_adapter)
-    @@adapter = cache_adapter
+    Cashier::StoreAdapters.current_adapter
   end
 
   # Public: whether the module will perform caching or not. this is being set in the application layer .perform_caching configuration
@@ -46,13 +31,15 @@ module Cashier
   def store_fragment(fragment, *tags)
     return unless perform_caching?
 
-    tags.each do |tag|
-      # store the fragment
-      adapter.store_fragment_in_tag(fragment, tag)
-    end
+    ActiveSupport::Notifications.instrument("cashier.store_fragment", :data => [fragment, tags]) do
+      tags.each do |tag|
+        # store the fragment
+        adapter.store_fragment_in_tag(fragment, tag)
+      end
 
-     # now store the tag for book keeping
-    adapter.store_tags(tags)
+       # now store the tag for book keeping
+      adapter.store_tags(tags)
+    end
   end
 
   # Public: expire tags. expiring the keys 'assigned' to the tags you expire and removes the tags from the tags list
@@ -66,20 +53,22 @@ module Cashier
   def expire(*tags)
     return unless perform_caching?
 
-    # delete them from the cache
-    tags.each do |tag|
-      fragment_keys = adapter.get_fragments_for_tag(tag)
-      
-      fragment_keys.each do |fragment_key|
-        Rails.cache.delete(fragment_key)
+    ActiveSupport::Notifications.instrument("cashier.expire", :data => tags) do
+      # delete them from the cache
+      tags.each do |tag|
+        fragment_keys = adapter.get_fragments_for_tag(tag)
+        
+        fragment_keys.each do |fragment_key|
+          Rails.cache.delete(fragment_key)
+        end
+
+        adapter.delete_tag(tag)
       end
 
-      adapter.delete_tag(tag)
+      # now remove them from the list
+      # of stored tags
+      adapter.remove_tags(tags)
     end
-
-    # now remove them from the list
-    # of stored tags
-    adapter.remove_tags(tags)
   end
 
   # Public: returns the array of tags stored in the tags store.
@@ -102,7 +91,9 @@ module Cashier
   #   Cashier.clear
   #
   def clear
-    adapter.clear
+    ActiveSupport::Notifications.instrument("cashier.clear") do
+      adapter.clear
+    end
   end
 
   # Public: get all the keys names as an array.
@@ -130,7 +121,9 @@ module Cashier
   end
 end
 
+
 require 'rails'
-require 'cashier/railtie'
+require 'cashier/store_adapters'
+require 'active_support/cache/dalli_store_additions'
 require 'cashier/adapters/cache_store'
 require 'cashier/adapters/redis_store'

@@ -29,9 +29,21 @@ caches_action :tag => proc {|c|
   "users/#{c.current_user.id}/dashboard"      
 }
 
-# in your sweeper, in your observers, in your resque jobs...wherever
+# in your sweeper, in your observers, in your Resque jobs...wherever
 Cashier.expire 'complicated-action'
 Cashier.expire 'tag1', 'tag2', 'tag3', 'tag4'
+
+# It integrates smoothly with Rails.cache as well, not just the views
+Rails.cache.fetch("user_1", :tag => ["users"]) { User.find(1) }
+Rails.cache.fetch("user_2", :tag => ["users"]) { User.find(2) }
+Rails.cache.fetch("user_3", :tag => ["users"]) { User.find(3) }
+Rails.cache.fetch("admins", :tag => ["users"]) { User.where(role: "Admin").all }
+
+# You can then expire all your users 
+Cashier.expire "users"
+
+# You can also use Rails.cache.write
+Rails.cache.write("foo", "bar", :tag => ["some_tag"])
 
 # what's cached
 Cashier.tags
@@ -80,7 +92,7 @@ Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
 `config/initializers/cashier.rb`
 
 ```ruby
-Cachier.adapter = :cache_store
+Cashier::StoreAdapters.adapter = :cache_store
 ```
 
 #### Setting an adapter for working with Redis as the tags storage
@@ -88,7 +100,7 @@ Cachier.adapter = :cache_store
 `config/initializers/cashier.rb`
 
 ```ruby
-Cashier.adapter = :redis_store
+Cashier::StoreAdapters.adapter = :redis_store
 Cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697')
 ```
 
@@ -118,8 +130,49 @@ Benchmark.measure do
   end
 end
 ```
-
 Using the Redis adapter, the same piece of code takes 0.8 seconds, quite the difference :)
+
+
+### Notifications
+
+Cashier will send out events when things happen inside the library.
+The events are sent out through `ActiveSupport::Notifications` so you can pretty much subscribe to the events from anywhere you want.
+
+Here are the way you can subscribe to the events and use the data from them.
+
+
+```ruby
+	# Subscribe to the store fragment event, this is fired every time cashier will call the "store_fragment" method
+	# payload[:data] will be something like this: ["key", ["tag1", "tag2", "tag3"]]
+	ActiveSupport::Notifications.subscribe("cashier.store_fragment") do |name, start, finish, id, payload|
+				
+	end
+	
+	# Subscribe to the clear event. (no data)
+	ActiveSupport::Notifications.subscribe("cashier.clear") do |name, start, finish, id, payload|
+				
+	end	
+	
+	# Subscribe to the delete_cache_key event
+	# this event will fire every time there's a Rails.cache.delete with the key
+	# payload[:data] will be the key name that's been deleted from the cache
+	ActiveSupport::Notifications.subscribe("cashier.delete_cache_key") do |name, start, finish, id, payload|
+				
+	end	
+
+	# Subscribe to the o_write_cache_key event
+	# this event will fire every time there's a Rails.cache.write with the key
+	# payload[:data] will be the key name that's been written to the cache
+	ActiveSupport::Notifications.subscribe("cashier.write_cache_key") do |name, start, finish, id, payload|
+				
+	end		
+```
+
+### Notifications use case
+At [Gogobot](http://www.gogobot.com) we have a plugin to invalidate the external CDN cache on full pages for logged out users.
+The usage is pretty unlimited.
+
+If you think we're missing a notification, please do open an issue or be awesome and do it yourself and open a pull request.
 
 ## Testing
 
@@ -166,6 +219,7 @@ scenario.
 
 * [adman65](http://twitter.com/adman65) - Initial Implementation
 * [KensoDev](http://twitter.com/kensodev) - Adding Redis support (Again \o/)
+* [KensoDev](http://twitter.com/kensodev) - Adding plugins support for callback methods
 
 ## Contributing to Cashier
  

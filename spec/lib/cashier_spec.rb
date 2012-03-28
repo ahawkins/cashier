@@ -1,21 +1,9 @@
 require 'spec_helper'
 
 describe "Cashier" do
-  context "Tags store adapters" do
-    subject { Cashier }
-
-    it "should allow me to set the keys adapter" do
-      subject.respond_to?(:adapter=).should be_true
-    end
-
-    it "shold allow to get the adapter" do
-      subject.respond_to?(:adapter).should be_true
-    end
-  end
-
   context "Cashier adapters communication through the interface" do
     before(:each) do
-      Cashier.adapter = :cache_store
+      Cashier::StoreAdapters.adapter = :cache_store
     end
     subject { Cashier }
     let(:adapter) { Cashier.adapter }
@@ -35,6 +23,35 @@ describe "Cashier" do
         adapter.should_receive(:store_tags).with(["dashboard", "settings"])
 
         subject.store_fragment('fragment-key', 'dashboard', 'settings')
+      end
+    end
+
+    describe "Cashier notifications" do
+      let(:notification_system) { ActiveSupport::Notifications }
+
+      it "should raise a callback when I call store_fragment" do
+        notification_system.should_receive(:instrument).with("cashier.store_fragment", :data => ["foo", ["bar"]])
+        subject.store_fragment("foo", "bar")
+      end
+
+      it "should raise a callback method when I call clear" do
+        notification_system.should_receive(:instrument).with("cashier.clear")
+        subject.clear
+      end
+
+      it "should raise a callback method when I call expire" do
+        notification_system.should_receive(:instrument).with("cashier.expire", :data => ["some_tag"])
+        subject.expire("some_tag")
+      end
+
+      it "should raise a callback when I call Rails.cache.delete" do
+        notification_system.should_receive(:instrument).with("cashier.delete_cache_key", :data => "some_key")
+        Rails.cache.delete("some_key")
+      end
+
+      it "should raise a callback when I call Rails.cache.write" do
+        notification_system.should_receive(:instrument).with("cashier.write_cache_key", :data => "foo")
+        Rails.cache.write("foo", "bar")
       end
     end
 
