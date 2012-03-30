@@ -218,7 +218,7 @@ scenario.
 
 ## Contributors
 
-* [adman65](http://twitter.com/adman65) - Initial Implementation
+* [twinturbo](http://twitter.com/adman65) - Initial Implementation
 * [KensoDev](http://twitter.com/kensodev) - Adding Redis support (Again \o/)
 * [KensoDev](http://twitter.com/kensodev) - Adding plugins support for callback methods
 
