@@ -11,7 +11,7 @@ module ActiveSupport
     # an in memory cache inside of a block.
     class DalliStore < Store
       def write_with_tags(key, value, options = {})
-        ActiveSupport::Notifications.instrument("cashier.write_cache_key", :data => key) do
+        ActiveSupport::Notifications.instrument("write_cache_key.cashier", :data => key) do
           tags = (options.nil?) ? options : options.delete(:tag)
           Cashier.store_fragment(key, tags) if tags
 
@@ -21,7 +21,7 @@ module ActiveSupport
       alias_method_chain :write, :tags
 
       def delete_with_tags(key, options = nil)
-        ActiveSupport::Notifications.instrument("cashier.delete_cache_key", :data => key) do
+        ActiveSupport::Notifications.instrument("delete_cache_key.cashier", :data => key) do
           delete_without_tags(key, options)  
         end
       end

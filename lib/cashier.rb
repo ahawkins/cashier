@@ -31,7 +31,7 @@ module Cashier
   def store_fragment(fragment, *tags)
     return unless perform_caching?
 
-    ActiveSupport::Notifications.instrument("cashier.store_fragment", :data => [fragment, tags]) do
+    ActiveSupport::Notifications.instrument("store_fragment.cashier", :data => [fragment, tags]) do
       tags.each do |tag|
         # store the fragment
         adapter.store_fragment_in_tag(fragment, tag)
@@ -53,11 +53,11 @@ module Cashier
   def expire(*tags)
     return unless perform_caching?
 
-    ActiveSupport::Notifications.instrument("cashier.expire", :data => tags) do
+    ActiveSupport::Notifications.instrument("expire.cashier", :data => tags) do
       # delete them from the cache
       tags.each do |tag|
         fragment_keys = adapter.get_fragments_for_tag(tag)
-        
+
         fragment_keys.each do |fragment_key|
           Rails.cache.delete(fragment_key)
         end
@@ -91,7 +91,7 @@ module Cashier
   #   Cashier.clear
   #
   def clear
-    ActiveSupport::Notifications.instrument("cashier.clear") do
+    ActiveSupport::Notifications.instrument("clear.cashier") do
       adapter.clear
     end
   end
