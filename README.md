@@ -141,30 +141,29 @@ The events are sent out through `ActiveSupport::Notifications` so you can pretty
 
 Here are the way you can subscribe to the events and use the data from them.
 
-
 ```ruby
 	# Subscribe to the store fragment event, this is fired every time cashier will call the "store_fragment" method
 	# payload[:data] will be something like this: ["key", ["tag1", "tag2", "tag3"]]
-	ActiveSupport::Notifications.subscribe("cashier.store_fragment") do |name, start, finish, id, payload|
+	ActiveSupport::Notifications.subscribe("store_fragment.cashier") do |name, start, finish, id, payload|
 				
 	end
 	
 	# Subscribe to the clear event. (no data)
-	ActiveSupport::Notifications.subscribe("cashier.clear") do |name, start, finish, id, payload|
+	ActiveSupport::Notifications.subscribe("clear.cashier") do |name, start, finish, id, payload|
 				
 	end	
 	
 	# Subscribe to the delete_cache_key event
 	# this event will fire every time there's a Rails.cache.delete with the key
 	# payload[:data] will be the key name that's been deleted from the cache
-	ActiveSupport::Notifications.subscribe("cashier.delete_cache_key") do |name, start, finish, id, payload|
+	ActiveSupport::Notifications.subscribe("delete_cache_key.cashier") do |name, start, finish, id, payload|
 				
 	end	
 
 	# Subscribe to the o_write_cache_key event
 	# this event will fire every time there's a Rails.cache.write with the key
 	# payload[:data] will be the key name that's been written to the cache
-	ActiveSupport::Notifications.subscribe("cashier.write_cache_key") do |name, start, finish, id, payload|
+	ActiveSupport::Notifications.subscribe("write_cache_key.cashier") do |name, start, finish, id, payload|
 				
 	end		
 ```
@@ -174,47 +173,6 @@ At [Gogobot](http://www.gogobot.com) we have a plugin to invalidate the external
 The usage is pretty unlimited.
 
 If you think we're missing a notification, please do open an issue or be awesome and do it yourself and open a pull request.
-
-## Testing
-
-Use can use cashier to test caching as well. First things first:
-
-```ruby
-# test.rb
-
-config.application_controller.perform_caching = true
-```
-
-I've also included some Rspec Matchers and a cucumber helper for testing
-caching. The rspec matchers can be used like this:
-
-```ruby
-describe "get index" do
-  include Cashier::Matchers
-
-  it "should cache the action" do
-    get :index
-    'some-tag'.should be_cached
-  end
-end
-```
-
-Testing w/cucumber is more involved.
-
-```ruby
-# features/support/cashier.rb
-require 'cashier/cucumber'
-```
-
-is an example of a possible step
-
-```ruby
-Then /the dashboard should be cached/ do
-  "dashboard".should be_cached
-end
-```
-Including `cashier/cucumber` will also wipe the cache before every
-scenario.
 
 ## Contributors
 
