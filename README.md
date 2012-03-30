@@ -92,7 +92,7 @@ Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
 `config/initializers/cashier.rb`
 
 ```ruby
-Cashier::StoreAdapters.adapter = :cache_store
+Cashier.adapter = :cache_store
 ```
 
 #### Setting an adapter for working with Redis as the tags storage

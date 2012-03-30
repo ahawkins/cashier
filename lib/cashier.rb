@@ -4,10 +4,6 @@ module Cashier
 
   CACHE_KEY = 'cashier-tags'
 
-  def adapter
-    Cashier::StoreAdapters.current_adapter
-  end
-
   # Public: whether the module will perform caching or not. this is being set in the application layer .perform_caching configuration
   #
   # Examples
@@ -119,11 +115,40 @@ module Cashier
   def keys_for(tag)
     adapter.get_fragments_for_tag(tag)
   end
+
+    # Public: adapter which is used by cashier.
+    #
+    # Examples
+    #
+    #   Cashier.adapter
+    #   # => Cashier::Adapters::CacheStore
+    # 
+    #   Cashier.adapter
+    #   # => Cashier::Adapters::RedisStore
+    #
+    def adapter
+      if @@adapter == :cache_store
+        Cashier::Adapters::CacheStore
+      else
+        Cashier::Adapters::RedisStore
+      end
+    end
+
+    # Public: set the adapter the Cashier module will use to store the keys
+    #
+    # cache_adapter - :cache_store / :redis_store
+    #
+    # Examples
+    #
+    #   Cashier.adapter = :redis_store
+    #
+    def adapter=(cache_adapter)
+      @@adapter = cache_adapter
+    end
 end
 
 require 'rails'
 require 'cashier/railtie'
-require 'cashier/store_adapters'
 require 'cashier/adapters/cache_store'
 require 'cashier/adapters/redis_store'
 

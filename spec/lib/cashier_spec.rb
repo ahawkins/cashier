@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Cashier" do
   before(:each) do
-    Cashier::StoreAdapters.adapter = :cache_store
+    Cashier.adapter = :cache_store
   end
 
   subject { Cashier }
@@ -115,5 +115,13 @@ describe "Cashier" do
       adapter.should_receive(:get_fragments_for_tag).with('dashboard').and_return(%w(key1 key2 key3))
       subject.keys_for('dashboard').should eql(%w(key1 key2 key3))
     end
+  end
+
+  it "should allow me to set the adapter" do
+    subject.respond_to?(:adapter=).should be_true
+  end
+
+  it "shold allow to get the adapter" do
+    subject.respond_to?(:adapter).should be_true
   end
 end
