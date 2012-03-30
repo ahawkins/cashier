@@ -1,9 +1,12 @@
 require "spec_helper"
 
-describe "DalliStoreAdditions" do
+describe "Rails cache integration" do
   subject { Rails.cache }
-  let(:redis) { subject.redis }
   let(:cashier) { Cashier }
+
+  it "should ensure that cache operations are instrumented" do
+    ActiveSupport::Cache::Store.instrument.should be_true
+  end
 
   context "write" do
     it "should write to cashier when I call Rails.cache.write with tags" do

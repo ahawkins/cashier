@@ -44,16 +44,6 @@ describe "Cashier" do
       notification_system.should_receive(:instrument).with("expire.cashier", :data => ["some_tag"])
       subject.expire("some_tag")
     end
-
-    it "should raise a callback when I call Rails.cache.delete" do
-      notification_system.should_receive(:instrument).with("delete_cache_key.cashier", :data => "some_key")
-      Rails.cache.delete("some_key")
-    end
-
-    it "should raise a callback when I call Rails.cache.write" do
-      notification_system.should_receive(:instrument).with("write_cache_key.cashier", :data => "foo")
-      Rails.cache.write("foo", "bar")
-    end
   end
 
   describe "#expire" do

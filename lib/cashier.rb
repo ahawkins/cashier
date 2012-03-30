@@ -121,9 +121,14 @@ module Cashier
   end
 end
 
-
 require 'rails'
+require 'cashier/railtie'
 require 'cashier/store_adapters'
-require 'active_support/cache/dalli_store_additions'
 require 'cashier/adapters/cache_store'
 require 'cashier/adapters/redis_store'
+
+# Connect cashier up to the low level Rails cache.
+ActiveSupport::Notifications.subscribe("cache_write.active_support") do |*args|
+  payload = ActiveSupport::Notifications::Event.new(*args).payload
+  Cashier.store_fragment payload[:key], payload[:tag] if payload[:tag]
+end

@@ -10,7 +10,6 @@ require 'cashier'
 
 ENV['RAILS_ENV'] = 'test'
 require 'dummy/config/environment'
-require 'dummy_plugins/dummy_plugin'
 
 require 'rspec/rails'
 
