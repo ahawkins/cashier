@@ -98,11 +98,10 @@ config.cashier.adapter = :cache_store
 
 #### Setting an adapter for working with Redis as the tags storage
 
-`config/initializers/cashier.rb`
 
 ```ruby
-Cashier::StoreAdapters.adapter = :redis_store
-Cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697')
+# config/environment/production.rb
+config.cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697') # or Resque.redis or any existing redis connection
 ```
 
 ### Why Redis?
