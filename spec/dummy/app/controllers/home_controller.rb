@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
-  caches_action :index, :tag => 'cashier'
+  caches_action :index, :tag => Proc.new() { ["goober", "trooper"] }
 
   def index
 
