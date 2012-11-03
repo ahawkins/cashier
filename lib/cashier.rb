@@ -1,7 +1,7 @@
 module Cashier
 
   CACHE_KEY = 'cashier-tags'
-  
+
   class << self
 
     # Public: whether the module will perform caching or not. this is being set in the application layer .perform_caching configuration
