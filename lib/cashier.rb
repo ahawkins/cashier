@@ -27,6 +27,8 @@ module Cashier
     def store_fragment(fragment, *tags)
       return unless perform_caching?
 
+      tags = tags.flatten
+
       ActiveSupport::Notifications.instrument("store_fragment.cashier", :data => [fragment, tags]) do
         tags.each do |tag|
           # store the fragment
