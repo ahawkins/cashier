@@ -17,6 +17,13 @@ describe "Cashier" do
       subject.store_fragment('fragment-key', 'dashboard')
     end
 
+    it "should flatten tags" do
+      adapter.should_receive(:store_fragment_in_tag).with('fragment-key', 'dashboard')
+      adapter.should_receive(:store_tags).with(["dashboard"])
+
+      subject.store_fragment('fragment-key', ['dashboard'])
+    end
+
     it "should store the tag for book keeping" do
       adapter.should_receive(:store_fragment_in_tag).with('fragment-key', 'dashboard')
       adapter.should_receive(:store_fragment_in_tag).with('fragment-key', 'settings')

@@ -29,7 +29,10 @@ RSpec.configure do |config|
       "port"          => 6397,
       "dir"           => Rails.root.join('tmp', 'cache'),
     }.map { |k, v| "#{k} #{v}" }.join('\n')
+
     `echo '#{redis_options}' | redis-server -`
+
+    sleep 0.25
 
     Cashier::Adapters::RedisStore.redis = Redis.new(:host => '127.0.0.1', :port => 6397)
   end
