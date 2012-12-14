@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Cashier::Adapters::CacheStore do
   subject { Cashier::Adapters::CacheStore }
   let(:cache) { Rails.cache }
-  
+
   it "should store the fragment in a tag" do
     subject.store_fragment_in_tag('fragment-key', 'dashboard')
     cache.fetch('dashboard').should eql(['fragment-key'])
@@ -62,7 +62,6 @@ describe Cashier::Adapters::CacheStore do
 
   context "keys" do
     it "should return the list of keys" do
-      
       subject.store_tags(['dashboard', 'settings', 'email'])
 
       subject.store_fragment_in_tag('key1', 'dashboard')
