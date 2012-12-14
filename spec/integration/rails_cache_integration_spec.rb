@@ -30,7 +30,7 @@ describe "Rails cache integration" do
       subject.fetch("foo", :tag => ["some_tag"]) { "bar" }
     end
 
-    it "shuld not write to cashier when I call Rails.cache.fetch without tags" do
+    it "should not write to cashier when I call Rails.cache.fetch without tags" do
       cashier.should_not_receive(:store_fragment)
       subject.fetch("foo") { "bar" }
     end
