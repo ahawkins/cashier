@@ -71,4 +71,22 @@ describe Cashier::Adapters::CacheStore do
       subject.keys.should eql(%w(key1 key2 key3))
     end
   end
+
+  context "containers" do
+    it "should be added to tags" do
+      subject.add_tags_containers(['key1', 'key2'], ['container1', 'container2'])
+      cache.fetch('cashier-tag-containers:key1').should == ['container1', 'container2']
+      cache.fetch('cashier-tag-containers:key2').should == ['container1', 'container2']
+      
+      subject.add_tags_containers(['key1', 'key3'], ['container3'])
+      cache.fetch('cashier-tag-containers:key1').should == ['container1', 'container2', 'container3']
+      cache.fetch('cashier-tag-containers:key3').should == ['container3']
+    end
+
+    it "should be returned for tags" do
+      subject.add_tags_containers(['key1', 'key2'], ['container1', 'container2'])
+      subject.get_tags_containers(['key1']).should == ['container1', 'container2']
+      subject.get_tags_containers(['key2']).should == ['container1', 'container2']
+    end
+  end
 end
