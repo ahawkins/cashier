@@ -86,4 +86,22 @@ describe Cashier::Adapters::RedisStore do
       subject.keys.sort.should eql(%w(key1 key2 key3))
     end
   end
+
+  context "containers" do
+    it "should be added to tags" do
+      subject.add_tags_containers(['key1', 'key2'], ['container1', 'container2'])
+      subject.add_tags_containers(['key1', 'key3'], ['container2', 'container3'])
+
+      subject.get_tags_containers(['key1']).should == ['container1', 'container2', 'container3']
+      subject.get_tags_containers(['key2']).should == ['container1', 'container2']
+      subject.get_tags_containers(['key1', 'key2']).should == ['container1', 'container2', 'container3']
+    end
+
+    it "should be returned for tags" do
+      subject.add_tags_containers(['key1', 'key2'], ['container1', 'container2'])
+      subject.get_tags_containers(['key1']).should == ['container1', 'container2']
+      subject.get_tags_containers(['key2']).should == ['container1', 'container2']
+    end
+  end
+  
 end

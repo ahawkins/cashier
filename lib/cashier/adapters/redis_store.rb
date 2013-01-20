@@ -41,6 +41,22 @@ module Cashier
       def self.keys
         tags.inject([]) { |arry, tag| arry += get_fragments_for_tag(tag) }.compact
       end
+
+      def self.get_tags_containers(tags)
+        all_containers = []
+        cache_keys = tags.map { |tag| Cashier::container_cache_key(tag) }
+        all_containers = redis.sunion(*cache_keys)        
+        return all_containers
+      end
+
+      def self.add_tags_containers(tags, containers)
+        return if !containers || containers.empty?
+        tags.each do |tag|
+          cache_key = Cashier::container_cache_key(tag)
+          redis.sadd(cache_key, containers.flatten)
+        end
+      end
+
     end
   end
 end
