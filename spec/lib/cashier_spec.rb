@@ -48,6 +48,7 @@ describe "Cashier" do
     end
 
     it "should raise a callback method when I call expire" do
+      notification_system.should_receive(:instrument).with("cache_read.active_support", :key => "cashier-tag-containers:some_tag")
       notification_system.should_receive(:instrument).with("expire.cashier", :data => ["some_tag"])
       subject.expire("some_tag")
     end
@@ -130,5 +131,24 @@ describe "Cashier" do
 
   it "shold allow to get the adapter" do
     subject.respond_to?(:adapter).should be_true
+  end
+
+  it "should set a container cache key" do
+    subject.container_cache_key(:something).should match(/something/)
+  end
+
+  it "should canonize ActiveRecord tags" do
+    require 'active_record'
+
+    ar_class = double("ar_class")
+    ar_class.stub(name: :AR)
+
+    ar = double("active_record")
+    ar.stub(class: ar_class)
+    ar.stub(is_a?: true)
+    ar.stub(to_param: 123)
+
+    res = Cashier.canonize_tags([1, 2, ar])
+    res.should == [1, 2, "AR-123"]
   end
 end
