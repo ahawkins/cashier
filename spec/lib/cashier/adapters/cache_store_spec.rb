@@ -1,5 +1,5 @@
 require 'spec_helper'
-  
+
 describe Cashier::Adapters::CacheStore do
   subject { Cashier::Adapters::CacheStore }
   let(:cache) { Rails.cache }

@@ -14,7 +14,7 @@ describe "Rails cache integration" do
       subject.write("foo", "bar", :tag => ["some_tag"])
     end
 
-    it "shuld not write to cashier when I call Rails.cache.write without tags" do
+    it "should not write to cashier when I call Rails.cache.write without tags" do
       cashier.should_not_receive(:store_fragment)
       subject.write("foo", "bar")
     end

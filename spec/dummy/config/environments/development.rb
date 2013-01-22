@@ -14,7 +14,7 @@ TestApp::Application.configure do
   #config.action_view.debug_rjs             = false
   config.action_controller.perform_caching = true
 
-  config.cache_store = :file_store, "/Users/hoolahoop/workspace/cashier/tmp"
+  config.cache_store = :file_store, "#{config.root}/tmp"
   config.cashier.adapter = :cache_store
   # Print deprecation notices to the Rails logger
   #config.active_support.deprecation = :log

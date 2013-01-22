@@ -27,4 +27,5 @@ describe ApplicationController do
     Cashier.should_receive(:store_fragment).with('views/key', 'tag')
     controller.write_fragment('key', 'content', :tag => lambda { |c| 'tag' })
   end
+
 end

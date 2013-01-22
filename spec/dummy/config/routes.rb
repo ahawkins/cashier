@@ -2,7 +2,15 @@ TestApp::Application.routes.draw do
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
+  resources :home, controller: :home do
+    collection do
+      get :special
+      get :nada
+    end
+  end
+
   root :to => 'home#index'
+
 
   # Sample of regular route:
   #   match 'products/:id' => 'catalog#view'

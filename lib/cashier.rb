@@ -40,6 +40,31 @@ module Cashier
       end
     end
 
+    # Public: store a page path with an array of tags for this page
+    #
+    # page_path - cached page location.
+    # tags - array of tags you want to assign this fragments.
+    #
+    # Examples
+    #
+    #   Cashier.store_page_path("page/path", "tag1", "tag2")
+    #
+    def store_page_path(page_path, *tags)
+      return unless perform_caching?
+
+      tags = tags.flatten
+
+      ActiveSupport::Notifications.instrument("store_page_path.cashier", :data => [page_path, tags]) do
+        tags.each do |tag|
+          # store the page_path
+          adapter.store_path_in_tag(page_path, tag)
+        end
+
+         # now store the tag for book keeping
+        adapter.store_page_tags(tags)
+      end
+    end
+
     # Public: expire tags. expiring the keys 'assigned' to the tags you expire and removes the tags from the tags list
     #
     # tags - array of tags to expire.
@@ -54,14 +79,9 @@ module Cashier
       ActiveSupport::Notifications.instrument("expire.cashier", :data => tags) do
         # delete them from the cache
         tags.each do |tag|
-          fragment_keys = adapter.get_fragments_for_tag(tag)
+          clear_fragments_for(tag)
 
-          # Delete each fragment from the cache.
-          fragment_keys.each do |fragment_key|
-            Rails.cache.delete(fragment_key)
-          end
-
-          adapter.delete_tag(tag)
+          clear_page_paths_for(tag)
         end
 
         # now remove them from the list
@@ -93,11 +113,10 @@ module Cashier
       ActiveSupport::Notifications.instrument("clear.cashier") do
         # delete them from the cache
         tags.each do |tag|
-          fragment_keys = adapter.get_fragments_for_tag(tag)
-          # Delete each fragment from the cache.
-          fragment_keys.each do |fragment_key|
-            Rails.cache.delete(fragment_key)
-          end
+          clear_fragments_for(tag)
+
+          clear_page_paths_for(tag)
+
           # Delete the tag itself
           adapter.delete_tag(tag)
         end
@@ -131,7 +150,7 @@ module Cashier
       adapter.get_fragments_for_tag(tag)
     end
 
-    # Public: adapter which is used by cashier. 
+    # Public: adapter which is used by cashier.
     # Defaults to :cache_store
     #
     # Examples
@@ -161,6 +180,41 @@ module Cashier
     #
     def adapter=(cache_adapter)
       @@adapter = cache_adapter
+    end
+
+    private
+
+    # Private: clear fragments
+    #
+    # Examples
+    #
+    #   Cashier.clear_fragments_for('tag1')
+    #
+    def clear_fragments_for(tag)
+      fragment_keys = adapter.get_fragments_for_tag(tag)
+      # Delete each fragment from the cache.
+      fragment_keys.each do |fragment_key|
+        Rails.cache.delete(fragment_key)
+      end
+
+      adapter.delete_tag(tag)
+    end
+
+    # Private: clear page paths
+    #
+    # Examples
+    #
+    #   Cashier.clear_page_paths_for('tag1')
+    #
+    def clear_page_paths_for(tag)
+      page_paths = adapter.get_page_paths_for_tag(tag)
+
+      # Clear each fragment from the page cache.
+      page_paths.each do |page_path|
+        ActionController::Base.expire_page(page_path)
+      end
+
+      adapter.delete_path_tag(tag)
     end
   end
 end
