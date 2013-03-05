@@ -129,6 +129,7 @@ module Cashier
     #   # => Cashier::Adapters::RedisStore
     #
     def adapter
+      @@adapter ||= :cache_store
       if @@adapter == :cache_store
         Cashier::Adapters::CacheStore
       else
