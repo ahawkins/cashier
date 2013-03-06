@@ -93,9 +93,7 @@ and tag then stores that in the rails cache.
 
 ### Adapters
 
-Cashier has 2 adapters for the tags storing, `:cache_store` or `:redis_store`.
-
-**IMPORTANT**: this store is ONLY for the tags, your fragments will still be stored in `Rails.cache`.
+Cashier has 2 adapters for the tags storing. `:cache_store` is the default and will use your Rails cache store to write its tags. `:redis_store` is an alternate allowing Redis to store your tag information. It requires setting the Redis instance manually and allows for a namespace to be attached to all keys used by Cashier.
 
 #### Setting an adapter for working with the cache as the tags storage
 
@@ -108,10 +106,15 @@ config.cashier.adapter = :cache_store
 
 #### Setting an adapter for working with Redis as the tags storage
 
-
 ```ruby
 # config/environment/production.rb
-config.cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '3697') # or Resque.redis or any existing redis connection
+config.cashier.adapter = :redis_store
+config.cashier.adapter.redis = Redis.new(:host => '127.0.0.1', :port => '6397') # or Redis.current or Resque.redis or any existing redis connection
+
+# Set a namespace:
+config.cashier.namespace = "cashier" # will store all keys in redis with "cashier:" prepended to the key
+# You can also use an array of namespaces:
+config.cashier.namespace = ["foo", "bar"] # will store all keys in redis with "foo:bar:" prepended to the key
 ```
 
 ### Why Redis?
@@ -194,6 +197,7 @@ If you think we're missing a notification, please do open an issue or be awesome
 * [twinturbo](http://twitter.com/adman65) - Initial Implementation
 * [KensoDev](http://twitter.com/kensodev) - Adding Redis support (Again \o/)
 * [KensoDev](http://twitter.com/kensodev) - Adding plugins support for callback methods
+* [amoslanka](http://twitter.com/amoslanka) - Adding Redis namespace and bug support
 
 ## Contributing to Cashier
  
