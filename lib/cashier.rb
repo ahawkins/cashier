@@ -103,6 +103,7 @@ module Cashier
         end
 
         adapter.clear
+        tags.count
       end
     end
 
