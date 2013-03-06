@@ -58,7 +58,7 @@ Rails.cache.write("foo", "bar", :tag => ["some_tag"])
 # what's cached
 Cashier.tags
 
-# sweep all stored keys
+# Clears out all tagged keys and tags
 Cashier.clear
 ```
 
@@ -157,10 +157,16 @@ ActiveSupport::Notifications.subscribe("store_fragment.cashier") do |name, start
 		
 end
 
+# Subscribe to the expire event.
+# payload[:data] will be the list of tags expired.
+ActiveSupport::Notifications.subscribe("expire.cashier") do |name, start, finish, id, payload|
+    
+end 
+
 # Subscribe to the clear event. (no data)
 ActiveSupport::Notifications.subscribe("clear.cashier") do |name, start, finish, id, payload|
-		
-end	
+    
+end 
 
 # Subscribe to the delete_cache_key event
 # this event will fire every time there's a Rails.cache.delete with the key

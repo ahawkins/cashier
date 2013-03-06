@@ -8,6 +8,7 @@ describe "Cashier" do
   subject { Cashier }
 
   let(:adapter) { Cashier.adapter }
+  let(:cache) { Rails.cache }
 
   describe "#store_fragment" do
     it "should write the tag to the cache" do
@@ -88,7 +89,7 @@ describe "Cashier" do
       subject.store_fragment('key2', 'settings')
       subject.store_fragment('key3', 'email')
 
-      subject.tags.should eql(%w(dashboard settings email))
+      subject.tags.sort.should eql(%w(dashboard settings email).sort)
     end
   end
 
@@ -99,9 +100,21 @@ describe "Cashier" do
       subject.store_fragment('key3', 'email')
     end
 
-    it "should expire all tags" do
+    it "should be able to be cleared" do
       adapter.should_receive(:clear)
       subject.clear
+    end
+
+    it "should expire all tagged fragments" do
+      cache.write('a_cache_key', 'foo', tag: 'dashboard')
+      cache.exist?('a_cache_key').should be_true
+      subject.clear
+      cache.exist?('a_cache_key').should be_false
+    end
+
+    it "should expire all tags" do 
+      subject.clear
+      cache.exist?('a_cache_key').should be_false
     end
 
     it "should clear the list of tracked tags" do
