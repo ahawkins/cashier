@@ -15,6 +15,32 @@ describe Cashier::Adapters::RedisStore do
     end
   end
 
+  context "setting and getting the namespace" do
+    it "should allow to set the namespace" do
+      subject.respond_to?(:namespace=).should be_true
+    end
+
+    it "should allow to get the namespace which should always be an array" do
+      subject.namespace = 'test'
+      subject.respond_to?(:namespace).should be_true
+      subject.namespace.should eql(['test'])
+    end
+  end
+
+  context "the namespace" do
+    it "should always be prepended to any redis key that is written" do
+      subject.namespace = 'test'
+      subject.store_tags(["dashboard"])
+      subject.store_fragment_in_tag("something", "dashboard")
+      redis.exists("test:dashboard").should be_true
+      redis.exists("test:#{Cashier::CACHE_KEY}").should be_true
+      subject.delete_tag('dashboard')
+      subject.clear
+      redis.exists("test:dashboard").should be_false
+      redis.exists("test:#{Cashier::CACHE_KEY}").should be_false
+    end
+  end
+
   it "should return the redis instance you set" do
     subject.redis = redis
     subject.redis.should == redis

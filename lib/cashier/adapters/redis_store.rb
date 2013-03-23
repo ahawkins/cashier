@@ -9,33 +9,45 @@ module Cashier
         @@redis = redis_instance
       end
 
+      def self.namespace
+        @@namespace ||= []
+      end
+
+      def self.namespace=(prefix)
+        @@namespace = Array(prefix)
+      end
+
+      def self.namespaced(key)
+        [namespace, key].flatten.join(':')
+      end
+
       def self.store_fragment_in_tag(fragment, tag)
-        redis.sadd(tag, fragment)
+        redis.sadd(namespaced(tag), fragment)
       end
 
       def self.store_tags(tags)
-        tags.each { |tag| redis.sadd(Cashier::CACHE_KEY, tag) }
+        tags.each { |tag| redis.sadd(namespaced(Cashier::CACHE_KEY), tag) }
       end
 
       def self.remove_tags(tags)
-        tags.each { |tag| redis.srem(Cashier::CACHE_KEY, tag) }
+        tags.each { |tag| redis.srem(namespaced(Cashier::CACHE_KEY), tag) }
       end
 
       def self.tags
-        redis.smembers(Cashier::CACHE_KEY) || []
+        redis.smembers(namespaced(Cashier::CACHE_KEY)) || []
       end
 
       def self.get_fragments_for_tag(tag)
-        redis.smembers(tag) || []
+        redis.smembers(namespaced(tag)) || []
       end
 
       def self.delete_tag(tag)
-        redis.del(tag)
+        redis.del(namespaced(tag))
       end
 
       def self.clear
         remove_tags(tags)
-        redis.del(Cashier::CACHE_KEY)
+        redis.del(namespaced(Cashier::CACHE_KEY))
       end
 
       def self.keys
