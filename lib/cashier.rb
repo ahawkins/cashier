@@ -56,6 +56,7 @@ module Cashier
         tags.each do |tag|
           fragment_keys = adapter.get_fragments_for_tag(tag)
 
+          # Delete each fragment from the cache.
           fragment_keys.each do |fragment_key|
             Rails.cache.delete(fragment_key)
           end
@@ -90,7 +91,19 @@ module Cashier
     #
     def clear
       ActiveSupport::Notifications.instrument("clear.cashier") do
+        # delete them from the cache
+        tags.each do |tag|
+          fragment_keys = adapter.get_fragments_for_tag(tag)
+          # Delete each fragment from the cache.
+          fragment_keys.each do |fragment_key|
+            Rails.cache.delete(fragment_key)
+          end
+          # Delete the tag itself
+          adapter.delete_tag(tag)
+        end
+
         adapter.clear
+        tags.count
       end
     end
 
@@ -118,7 +131,8 @@ module Cashier
       adapter.get_fragments_for_tag(tag)
     end
 
-    # Public: adapter which is used by cashier.
+    # Public: adapter which is used by cashier. 
+    # Defaults to :cache_store
     #
     # Examples
     #
@@ -129,6 +143,7 @@ module Cashier
     #   # => Cashier::Adapters::RedisStore
     #
     def adapter
+      @@adapter ||= :cache_store
       if @@adapter == :cache_store
         Cashier::Adapters::CacheStore
       else
