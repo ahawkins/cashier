@@ -8,6 +8,7 @@ module Cashier
       end
 
       def self.store_tags(tags)
+
         cashier_tags = Rails.cache.fetch(Cashier::CACHE_KEY) || []
         cashier_tags = (cashier_tags + tags).uniq
 
@@ -40,6 +41,26 @@ module Cashier
       def self.keys
         tags.inject([]) { |arry, tag| arry += Rails.cache.fetch(tag) }.compact
       end
+
+      def self.get_tags_containers(tags)
+        all_containers = []
+        tags.each do |tag|
+          cache_key = Cashier::container_cache_key(tag)
+          containers = Rails.cache.fetch(cache_key) || []
+          all_containers += containers
+        end
+        return all_containers.flatten.uniq
+      end
+
+      def self.add_tags_containers(tags, containers)
+        tags.each do |tag|
+          cache_key = Cashier::container_cache_key(tag)
+          existing_containers = Rails.cache.fetch(cache_key) || []
+          all_containers = (existing_containers + containers).flatten.uniq
+          Rails.cache.write(cache_key, all_containers)
+        end
+      end
+
     end
   end
 end
