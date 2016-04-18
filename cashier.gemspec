@@ -17,10 +17,12 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency 'rails', '~> 3'
+  s.add_development_dependency 'rails', '~> 4'
+  s.add_dependency 'actionpack-action_caching'
+  s.add_dependency 'actionpack-page_caching'
 
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'rspec', '~> 2.14.1'
+  s.add_development_dependency 'rspec-rails', '~> 2.14.2'
   s.add_development_dependency 'dalli'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'redis', '~> 3.0'
