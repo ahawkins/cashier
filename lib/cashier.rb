@@ -1,9 +1,9 @@
-module Cashier
+# frozen_string_literal: true
 
+module Cashier
   CACHE_KEY = 'cashier-tags'
 
   class << self
-
     # Public: whether the module will perform caching or not. this is being set in the application layer .perform_caching configuration
     #
     # Examples
@@ -29,40 +29,31 @@ module Cashier
 
       tags = tags.flatten
 
-      ActiveSupport::Notifications.instrument("store_fragment.cashier", :data => [fragment, tags]) do
+      ActiveSupport::Notifications.instrument('store_fragment.cashier', data: [fragment, tags]) do
         tags.each do |tag|
           # store the fragment
           adapter.store_fragment_in_tag(fragment, tag)
         end
 
-         # now store the tag for book keeping
+        # now store the tag for book keeping
         adapter.store_tags(tags)
       end
     end
 
     # Public: expire tags. expiring the keys 'assigned' to the tags you expire and removes the tags from the tags list
-    # 
+    #
     # tags - array of tags to expire.
-    # 
+    #
     # Examples
     #
     #   Cashier.expire('tag1', 'tag2')
-    # 
+    #
     def expire(*tags)
       return unless perform_caching?
 
-      ActiveSupport::Notifications.instrument("expire.cashier", :data => tags) do
+      ActiveSupport::Notifications.instrument('expire.cashier', data: tags) do
         # delete them from the cache
-        tags.each do |tag|
-          fragment_keys = adapter.get_fragments_for_tag(tag)
-
-          # Delete each fragment from the cache.
-          fragment_keys.each do |fragment_key|
-            Rails.cache.delete(fragment_key)
-          end
-
-          adapter.delete_tag(tag)
-        end
+        delete_fragments_from_cache(tags)
 
         # now remove them from the list
         # of stored tags
@@ -90,17 +81,9 @@ module Cashier
     #   Cashier.clear
     #
     def clear
-      ActiveSupport::Notifications.instrument("clear.cashier") do
+      ActiveSupport::Notifications.instrument('clear.cashier') do
         # delete them from the cache
-        tags.each do |tag|
-          fragment_keys = adapter.get_fragments_for_tag(tag)
-          # Delete each fragment from the cache.
-          fragment_keys.each do |fragment_key|
-            Rails.cache.delete(fragment_key)
-          end
-          # Delete the tag itself
-          adapter.delete_tag(tag)
-        end
+        delete_fragments_from_cache(tags)
 
         adapter.clear
         tags.count
@@ -131,20 +114,20 @@ module Cashier
       adapter.get_fragments_for_tag(tag)
     end
 
-    # Public: adapter which is used by cashier. 
+    # Public: adapter which is used by cashier.
     # Defaults to :cache_store
     #
     # Examples
     #
     #   Cashier.adapter
     #   # => Cashier::Adapters::CacheStore
-    # 
+    #
     #   Cashier.adapter
     #   # => Cashier::Adapters::RedisStore
     #
     def adapter
-      @@adapter ||= :cache_store
-      if @@adapter == :cache_store
+      @adapter ||= :cache_store
+      if @adapter == :cache_store
         Cashier::Adapters::CacheStore
       else
         Cashier::Adapters::RedisStore
@@ -159,8 +142,23 @@ module Cashier
     #
     #   Cashier.adapter = :redis_store
     #
-    def adapter=(cache_adapter)
-      @@adapter = cache_adapter
+    attr_writer :adapter
+
+    private
+
+    def delete_fragments_from_cache(tags)
+      tags.each do |tag|
+        fragment_keys = adapter.get_fragments_for_tag(tag)
+
+        # Delete each fragment from the cache.
+        fragment_keys.each_slice(100) do |keys|
+          keys.each do |key|
+            Rails.cache.delete(key)
+          end
+        end
+
+        adapter.delete_tag(tag)
+      end
     end
   end
 end
@@ -171,7 +169,7 @@ require 'cashier/adapters/cache_store'
 require 'cashier/adapters/redis_store'
 
 # Connect cashier up to the low level Rails cache.
-ActiveSupport::Notifications.subscribe("cache_write.active_support") do |*args|
+ActiveSupport::Notifications.subscribe('cache_write.active_support') do |*args|
   payload = ActiveSupport::Notifications::Event.new(*args).payload
   Cashier.store_fragment payload[:key], payload[:tag] if payload[:tag]
 end
