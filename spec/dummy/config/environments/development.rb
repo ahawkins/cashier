@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TestApp::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -11,7 +13,6 @@ TestApp::Application.configure do
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
-  config.action_view.debug_rjs             = true
   config.action_controller.perform_caching = true
 
   # Print deprecation notices to the Rails logger
@@ -22,4 +23,3 @@ TestApp::Application.configure do
 
   config.cache_store = :mem_cache_store
 end
-

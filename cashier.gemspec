@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_development_dependency 'dalli'
+  s.add_development_dependency 'pry-rails'
   s.add_development_dependency 'rails', '~> 5.2'
   s.add_development_dependency 'redis', '~> 4.0'
   s.add_development_dependency 'rspec'

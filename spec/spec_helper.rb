@@ -1,26 +1,26 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 require 'redis'
 require 'dalli'
+require 'dummy/config/environment'
+require 'rspec/rails'
+require 'pry'
+require 'fileutils'
+require 'cashier'
 
 SimpleCov.start
 
-$: << File.join(File.dirname(__FILE__), '..', 'lib')
-
-require 'cashier'
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
 ENV['RAILS_ENV'] = 'test'
-require 'dummy/config/environment'
-
-require 'rspec/rails'
-
-require 'fileutils'
 
 RSpec.configure do |config|
   config.before(:suite) do
-    Cashier::Adapters::RedisStore.redis = Redis.new :host => '127.0.0.1'
+    Cashier::Adapters::RedisStore.redis = Redis.new host: '127.0.0.1'
   end
 
-  config.before(:each) do
+  config.before do
     Cashier::Adapters::RedisStore.redis.flushdb
     Rails.cache.clear
   end
